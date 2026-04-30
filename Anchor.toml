@@ -1,0 +1,19 @@
+[toolchain]
+package_manager = "bun"
+
+[features]
+resolution = true
+skip-lint = false
+
+[programs.devnet]
+atomx_program = "3nrc4dPYdhztn9d82QmrznATBbYEi9hhvRyx6AnHVGk9"
+
+[registry]
+url = "https://api.apr.dev"
+
+[provider]
+cluster = "devnet"
+wallet = "~/.config/solana/id.json"
+
+[scripts]
+test = "bun run ts-mocha -p ./tsconfig.anchor.json -t 1000000 \"tests/**/*.ts\""
