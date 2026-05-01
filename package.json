@@ -6,7 +6,7 @@
   ],
   "scripts": {
     "anchor-test": "anchor test",
-    "web-dev": "bun --cwd apps/web dev",
+    "web-dev": "bun --env-file=.env.local --cwd apps/web dev",
     "web-build": "bun --cwd apps/web build"
   },
   "devDependencies": {
@@ -22,5 +22,9 @@
     "ts-mocha": "^10.0.0",
     "typescript": "^5.7.3",
     "uuid": "^14.0.0"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "dotenv": "^17.4.2"
   }
 }
