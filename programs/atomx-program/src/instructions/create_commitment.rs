@@ -16,10 +16,10 @@ pub fn handler(
     // --- Validation ---
     require!(stake_amount > 0, AtomxError::InvalidStakeAmount);
     require!(
-        duration_days >= 1 && duration_days <= 365,
+        duration_days >= 7 && duration_days <= 365,
         AtomxError::InvalidDuration
     );
-    require!(daily_target_minutes >= 1, AtomxError::InvalidTargetMinutes);
+    require!(daily_target_minutes >= 10, AtomxError::InvalidTargetMinutes);
 
     // --- Initialize UserProfile (init_if_needed handles first-time) ---
     let user_profile = &mut ctx.accounts.user_profile;

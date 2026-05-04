@@ -1,4 +1,13 @@
+'use client';
+
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
+
+// Import the WalletMultiButton dynamically to avoid SSR hydration errors
+const WalletMultiButton = dynamic(
+  () => import('@solana/wallet-adapter-react-ui').then((mod) => mod.WalletMultiButton),
+  { ssr: false }
+);
 
 export default function Navbar() {
   return (
@@ -11,9 +20,14 @@ export default function Navbar() {
       </Link>
 
       {/* Action Button */}
-      <button className="px-6 py-2 text-sm font-bold tracking-wide text-black uppercase transition-all bg-[#00FFA3] rounded-full hover:bg-[#00FFA3]/90 hover:scale-105 active:scale-95 shadow-[0_0_15px_rgba(0,255,163,0.3)]">
-        Connect Wallet
-      </button>
+      <div className="flex items-center gap-6">
+        <Link href="/dashboard" className="text-sm font-medium tracking-wide text-white uppercase transition-colors hover:text-[#00FFA3]">
+          Dashboard
+        </Link>
+        <div className="wallet-adapter-button-trigger">
+          <WalletMultiButton />
+        </div>
+      </div>
     </nav>
   );
 }

@@ -3,14 +3,15 @@ import { supabaseAdmin } from '@/lib/supabaseAdmin';
 import { Connection, PublicKey } from '@solana/web3.js';
 import { BorshCoder, EventParser } from '@coral-xyz/anchor';
 // Mengambil IDL langsung dari folder program yang kita buat
-import idl from '../../../../../../target/idl/atomx_program.json';
+import idl from '@/lib/idl.json';
 
-const PROGRAM_ID = new PublicKey('5zP6RmfajRyLpRUAM5SCpPSdBin5d1TU9CN7APM6vzQt');
+const PROGRAM_ID = new PublicKey('3nrc4dPYdhztn9d82QmrznATBbYEi9hhvRyx6AnHVGk9');
 const coder = new BorshCoder(idl as any);
 const eventParser = new EventParser(PROGRAM_ID, coder);
 
-// Gunakan RPC Devnet public untuk fetch tx details (atau RPC dari Helius/Quicknode)
-const connection = new Connection('https://api.devnet.solana.com', 'confirmed');
+// Gunakan Helius RPC untuk fetch tx details (stabil, tanpa rate limit)
+const RPC_URL = process.env.NEXT_PUBLIC_SOLANA_RPC_URL || 'https://api.devnet.solana.com';
+const connection = new Connection(RPC_URL, 'confirmed');
 
 export async function POST(request: Request) {
     try {
@@ -62,11 +63,14 @@ export async function POST(request: Request) {
                     const { data: commitment } = await supabaseAdmin.from('commitments').select('id').eq('pda_address', event.data.pda.toString()).single();
 
                     if (user && commitment) {
+                        const rawAmount = event.data.stakeAmount || event.data.stake_amount;
+                        const amount = rawAmount?.toNumber ? rawAmount.toNumber() : Number(rawAmount);
+
                         // 2. Insert riwayat staking ke commitment_stakes
                         await supabaseAdmin.from('commitment_stakes').insert({
                             commitment_id: commitment.id,
                             user_id: user.id,
-                            amount: event.data.stakeAmount.toNumber(), // BN ke Number
+                            amount: amount, // BN ke Number
                             spl_mint_address: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v', // USDC
                             tx_signature: tx.signature,
                             type: 'initial'
@@ -79,12 +83,16 @@ export async function POST(request: Request) {
                     const { data: commitment } = await supabaseAdmin.from('commitments').select('id, user_id').eq('pda_address', event.data.commitment.toString()).single();
 
                     if (commitment) {
+                        const rawSlashed = event.data.slashedAmount || event.data.slashed_amount;
+                        const slashedAmt = rawSlashed?.toNumber ? rawSlashed.toNumber() : Number(rawSlashed);
+                        const failCount = event.data.failCount !== undefined ? event.data.failCount : event.data.fail_count;
+
                         // 2. Insert ke slash_events
                         await supabaseAdmin.from('slash_events').insert({
                             commitment_id: commitment.id,
                             user_id: commitment.user_id,
-                            slashed_amount: event.data.slashedAmount.toNumber(),
-                            fail_count_at_slash: event.data.failCount,
+                            slashed_amount: slashedAmt,
+                            fail_count_at_slash: failCount,
                             tx_signature: tx.signature,
                             reason: 'Daily target not met / validation failed'
                         });
@@ -96,13 +104,16 @@ export async function POST(request: Request) {
                 else if (event.name === 'CommitmentCompleted') {
                     const { data: commitment } = await supabaseAdmin.from('commitments').select('id, user_id').eq('pda_address', event.data.commitment.toString()).single();
 
-                    if (commitment && event.data.rewardAmount.toNumber() > 0) {
+                    const rawReward = event.data.rewardAmount || event.data.reward_amount;
+                    const rewardAmt = rawReward?.toNumber ? rawReward.toNumber() : Number(rawReward);
+
+                    if (commitment && rewardAmt > 0) {
                         // Insert reward log
                         await supabaseAdmin.from('rewards').insert({
                             commitment_id: commitment.id,
                             user_id: commitment.user_id,
                             reward_type: 'loyalty_bonus',
-                            amount: event.data.rewardAmount.toNumber(),
+                            amount: rewardAmt,
                             spl_mint_address: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
                             tx_signature: tx.signature,
                             claimed_at: new Date().toISOString()
@@ -120,7 +131,20 @@ export async function POST(request: Request) {
 
                     if (commitmentInfo && commitmentInfo.users && process.env.CROSSMINT_API_KEY) {
                         const userPubkey = (commitmentInfo.users as any).solana_pubkey;
-                        const dayNumber = event.data.dayNumber;
+                        const userId = (commitmentInfo.users as any).id;
+                        const dayNumber = event.data.dayNumber !== undefined ? event.data.dayNumber : event.data.day_number;
+
+                        // Simpan image_hash ke Supabase untuk mencegah user pakai foto yang sama
+                        const proofHashArray = event.data.proofHash || event.data.proof_hash;
+                        if (proofHashArray) {
+                            const imageHashHex = Buffer.from(proofHashArray).toString('hex');
+                            await supabaseAdmin.from('proof_hashes').insert({
+                                user_id: userId,
+                                commitment_id: commitmentInfo.id,
+                                image_hash: imageHashHex
+                            });
+                            console.log('✅ Berhasil mencatat anti-plagiat image_hash di DB');
+                        }
 
                         console.log(`🚀 [Gamification] Minting cNFT Badge Day ${dayNumber} untuk ${userPubkey}...`);
 

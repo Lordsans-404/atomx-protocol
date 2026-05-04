@@ -12,7 +12,7 @@ atomx_program = "3nrc4dPYdhztn9d82QmrznATBbYEi9hhvRyx6AnHVGk9"
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "devnet"
+cluster = "https://devnet.helius-rpc.com/?api-key=761f203b-dc1a-4ef2-a1e9-8461ebc45ff2"
 wallet = "~/.config/solana/id.json"
 
 [scripts]

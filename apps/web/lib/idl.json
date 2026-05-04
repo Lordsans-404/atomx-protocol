@@ -1,0 +1,1660 @@
+{
+  "address": "3nrc4dPYdhztn9d82QmrznATBbYEi9hhvRyx6AnHVGk9",
+  "metadata": {
+    "name": "atomx_program",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Created with Anchor"
+  },
+  "instructions": [
+    {
+      "name": "complete_commitment",
+      "docs": [
+        "Complete a commitment and claim reward"
+      ],
+      "discriminator": [
+        60,
+        217,
+        179,
+        251,
+        251,
+        5,
+        33,
+        32
+      ],
+      "accounts": [
+        {
+          "name": "user",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "commitment",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  109,
+                  109,
+                  105,
+                  116,
+                  109,
+                  101,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "commitment.owner",
+                "account": "CommitmentAccount"
+              },
+              {
+                "kind": "account",
+                "path": "commitment.commitment_id",
+                "account": "CommitmentAccount"
+              }
+            ]
+          }
+        },
+        {
+          "name": "user_profile",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  117,
+                  115,
+                  101,
+                  114,
+                  95,
+                  112,
+                  114,
+                  111,
+                  102,
+                  105,
+                  108,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "user"
+              }
+            ]
+          }
+        },
+        {
+          "name": "global_state",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  103,
+                  108,
+                  111,
+                  98,
+                  97,
+                  108,
+                  95,
+                  115,
+                  116,
+                  97,
+                  116,
+                  101
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "escrow_vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  101,
+                  115,
+                  99,
+                  114,
+                  111,
+                  119
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "commitment"
+              }
+            ]
+          }
+        },
+        {
+          "name": "global_vault",
+          "writable": true
+        },
+        {
+          "name": "user_token_account",
+          "writable": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "create_commitment",
+      "docs": [
+        "Create a new commitment: stake USDC into an escrow vault"
+      ],
+      "discriminator": [
+        232,
+        31,
+        118,
+        65,
+        229,
+        2,
+        2,
+        170
+      ],
+      "accounts": [
+        {
+          "name": "user",
+          "docs": [
+            "User creating the commitment — signer and payer"
+          ],
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "user_profile",
+          "docs": [
+            "User profile PDA — created on first commitment"
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  117,
+                  115,
+                  101,
+                  114,
+                  95,
+                  112,
+                  114,
+                  111,
+                  102,
+                  105,
+                  108,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "user"
+              }
+            ]
+          }
+        },
+        {
+          "name": "commitment",
+          "docs": [
+            "New commitment PDA"
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  109,
+                  109,
+                  105,
+                  116,
+                  109,
+                  101,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "user"
+              },
+              {
+                "kind": "arg",
+                "path": "commitment_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "escrow_vault",
+          "docs": [
+            "Escrow vault for this commitment's USDC"
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  101,
+                  115,
+                  99,
+                  114,
+                  111,
+                  119
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "commitment"
+              }
+            ]
+          }
+        },
+        {
+          "name": "user_token_account",
+          "docs": [
+            "User's USDC token account (source of stake)"
+          ],
+          "writable": true
+        },
+        {
+          "name": "usdc_mint",
+          "docs": [
+            "USDC mint"
+          ]
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "commitment_id",
+          "type": {
+            "array": [
+              "u8",
+              16
+            ]
+          }
+        },
+        {
+          "name": "stake_amount",
+          "type": "u64"
+        },
+        {
+          "name": "duration_days",
+          "type": "u16"
+        },
+        {
+          "name": "daily_target_minutes",
+          "type": "u16"
+        }
+      ]
+    },
+    {
+      "name": "init_global",
+      "docs": [
+        "Initialize global protocol state + single USDC vault (once at deploy)"
+      ],
+      "discriminator": [
+        44,
+        238,
+        77,
+        253,
+        76,
+        182,
+        192,
+        162
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "docs": [
+            "Deployer / admin — pays for account creation"
+          ],
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "global_state",
+          "docs": [
+            "Global state PDA — initialized once"
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  103,
+                  108,
+                  111,
+                  98,
+                  97,
+                  108,
+                  95,
+                  115,
+                  116,
+                  97,
+                  116,
+                  101
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "global_vault",
+          "docs": [
+            "Single USDC vault for the entire protocol"
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  103,
+                  108,
+                  111,
+                  98,
+                  97,
+                  108,
+                  95,
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "usdc_mint",
+          "docs": [
+            "USDC mint"
+          ]
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "redeem",
+      "docs": [
+        "Redeem a failed commitment (30-day cooldown)"
+      ],
+      "discriminator": [
+        184,
+        12,
+        86,
+        149,
+        70,
+        196,
+        97,
+        225
+      ],
+      "accounts": [
+        {
+          "name": "user",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "user_profile",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  117,
+                  115,
+                  101,
+                  114,
+                  95,
+                  112,
+                  114,
+                  111,
+                  102,
+                  105,
+                  108,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "user"
+              }
+            ]
+          }
+        },
+        {
+          "name": "old_commitment",
+          "docs": [
+            "The old failed commitment (reference)"
+          ],
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  109,
+                  109,
+                  105,
+                  116,
+                  109,
+                  101,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "old_commitment.owner",
+                "account": "CommitmentAccount"
+              },
+              {
+                "kind": "account",
+                "path": "old_commitment.commitment_id",
+                "account": "CommitmentAccount"
+              }
+            ]
+          }
+        },
+        {
+          "name": "new_commitment",
+          "docs": [
+            "New redemption commitment PDA"
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  109,
+                  109,
+                  105,
+                  116,
+                  109,
+                  101,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "user"
+              },
+              {
+                "kind": "arg",
+                "path": "commitment_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "escrow_vault",
+          "docs": [
+            "Escrow vault for the new commitment"
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  101,
+                  115,
+                  99,
+                  114,
+                  111,
+                  119
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "new_commitment"
+              }
+            ]
+          }
+        },
+        {
+          "name": "user_token_account",
+          "writable": true
+        },
+        {
+          "name": "usdc_mint"
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "commitment_id",
+          "type": {
+            "array": [
+              "u8",
+              16
+            ]
+          }
+        },
+        {
+          "name": "stake_amount",
+          "type": "u64"
+        },
+        {
+          "name": "duration_days",
+          "type": "u16"
+        },
+        {
+          "name": "daily_target_minutes",
+          "type": "u16"
+        }
+      ]
+    },
+    {
+      "name": "slash",
+      "docs": [
+        "Slash a commitment (authority only)"
+      ],
+      "discriminator": [
+        204,
+        141,
+        18,
+        161,
+        8,
+        177,
+        92,
+        142
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "docs": [
+            "Program authority (backend) — only authorized signer"
+          ],
+          "signer": true
+        },
+        {
+          "name": "commitment",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  109,
+                  109,
+                  105,
+                  116,
+                  109,
+                  101,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "commitment.owner",
+                "account": "CommitmentAccount"
+              },
+              {
+                "kind": "account",
+                "path": "commitment.commitment_id",
+                "account": "CommitmentAccount"
+              }
+            ]
+          }
+        },
+        {
+          "name": "user_profile",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  117,
+                  115,
+                  101,
+                  114,
+                  95,
+                  112,
+                  114,
+                  111,
+                  102,
+                  105,
+                  108,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "commitment.owner",
+                "account": "CommitmentAccount"
+              }
+            ]
+          }
+        },
+        {
+          "name": "global_state",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  103,
+                  108,
+                  111,
+                  98,
+                  97,
+                  108,
+                  95,
+                  115,
+                  116,
+                  97,
+                  116,
+                  101
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "escrow_vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  101,
+                  115,
+                  99,
+                  114,
+                  111,
+                  119
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "commitment"
+              }
+            ]
+          }
+        },
+        {
+          "name": "global_vault",
+          "writable": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": [
+        {
+          "name": "reason",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "submit_proof",
+      "docs": [
+        "Submit a daily proof hash on-chain"
+      ],
+      "discriminator": [
+        54,
+        241,
+        46,
+        84,
+        4,
+        212,
+        46,
+        94
+      ],
+      "accounts": [
+        {
+          "name": "user",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "commitment",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  109,
+                  109,
+                  105,
+                  116,
+                  109,
+                  101,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "commitment.owner",
+                "account": "CommitmentAccount"
+              },
+              {
+                "kind": "account",
+                "path": "commitment.commitment_id",
+                "account": "CommitmentAccount"
+              }
+            ]
+          }
+        },
+        {
+          "name": "proof_record",
+          "docs": [
+            "Proof record PDA — unique per (commitment, day_number).",
+            "`init` constraint prevents duplicate proofs automatically."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  111,
+                  102
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "commitment"
+              },
+              {
+                "kind": "arg",
+                "path": "day_number"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "day_number",
+          "type": "u16"
+        },
+        {
+          "name": "proof_hash",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        },
+        {
+          "name": "actual_minutes",
+          "type": "u16"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "CommitmentAccount",
+      "discriminator": [
+        155,
+        206,
+        108,
+        147,
+        168,
+        110,
+        100,
+        181
+      ]
+    },
+    {
+      "name": "GlobalStateAccount",
+      "discriminator": [
+        81,
+        34,
+        99,
+        68,
+        100,
+        163,
+        26,
+        249
+      ]
+    },
+    {
+      "name": "ProofRecord",
+      "discriminator": [
+        237,
+        59,
+        155,
+        172,
+        204,
+        117,
+        87,
+        44
+      ]
+    },
+    {
+      "name": "UserProfile",
+      "discriminator": [
+        32,
+        37,
+        119,
+        205,
+        179,
+        180,
+        13,
+        194
+      ]
+    }
+  ],
+  "events": [
+    {
+      "name": "CommitmentCompleted",
+      "discriminator": [
+        235,
+        171,
+        195,
+        148,
+        221,
+        80,
+        28,
+        23
+      ]
+    },
+    {
+      "name": "CommitmentCreated",
+      "discriminator": [
+        179,
+        58,
+        10,
+        188,
+        241,
+        19,
+        191,
+        229
+      ]
+    },
+    {
+      "name": "GlobalInitialized",
+      "discriminator": [
+        142,
+        186,
+        188,
+        168,
+        64,
+        228,
+        8,
+        20
+      ]
+    },
+    {
+      "name": "ProofSubmitted",
+      "discriminator": [
+        160,
+        51,
+        85,
+        70,
+        249,
+        89,
+        5,
+        139
+      ]
+    },
+    {
+      "name": "RedemptionUsed",
+      "discriminator": [
+        249,
+        237,
+        75,
+        34,
+        94,
+        117,
+        42,
+        91
+      ]
+    },
+    {
+      "name": "SlashExecuted",
+      "discriminator": [
+        170,
+        48,
+        78,
+        119,
+        242,
+        155,
+        108,
+        61
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "InvalidStakeAmount",
+      "msg": "Stake amount must be greater than zero"
+    },
+    {
+      "code": 6001,
+      "name": "InvalidDuration",
+      "msg": "Duration must be between 1 and 365 days"
+    },
+    {
+      "code": 6002,
+      "name": "InvalidTargetMinutes",
+      "msg": "Daily target minutes must be at least 1"
+    },
+    {
+      "code": 6003,
+      "name": "CommitmentNotActive",
+      "msg": "Commitment is not in active status"
+    },
+    {
+      "code": 6004,
+      "name": "ProofAlreadySubmitted",
+      "msg": "Proof already submitted for this day"
+    },
+    {
+      "code": 6005,
+      "name": "InvalidDayNumber",
+      "msg": "Day number must be sequential (current_day + 1)"
+    },
+    {
+      "code": 6006,
+      "name": "MaxFailuresReached",
+      "msg": "Maximum failures reached (2), commitment is terminated"
+    },
+    {
+      "code": 6007,
+      "name": "ShortDurationAutoFail",
+      "msg": "Short duration commitment (<=7 days): first failure auto-fails"
+    },
+    {
+      "code": 6008,
+      "name": "UnauthorizedAuthority",
+      "msg": "Unauthorized: signer is not the program authority"
+    },
+    {
+      "code": 6009,
+      "name": "CommitmentNotComplete",
+      "msg": "Commitment not complete: proof_count < duration_days"
+    },
+    {
+      "code": 6010,
+      "name": "InsufficientEscrow",
+      "msg": "Insufficient escrow balance for transfer"
+    },
+    {
+      "code": 6011,
+      "name": "InvalidProofHash",
+      "msg": "Invalid proof hash: must be 32 bytes"
+    },
+    {
+      "code": 6012,
+      "name": "InsufficientProofMinutes",
+      "msg": "Proof rejected: actual minutes is less than 50% of the daily target"
+    },
+    {
+      "code": 6013,
+      "name": "MathOverflow",
+      "msg": "Arithmetic overflow"
+    },
+    {
+      "code": 6014,
+      "name": "RedemptionCooldown",
+      "msg": "Redemption cooldown: must wait 30 days between redemptions"
+    },
+    {
+      "code": 6015,
+      "name": "NoFailedCommitment",
+      "msg": "No failed commitment: user is not eligible for redemption"
+    },
+    {
+      "code": 6016,
+      "name": "MaxActiveCommitments",
+      "msg": "Maximum active commitments reached"
+    },
+    {
+      "code": 6017,
+      "name": "GlobalStateAlreadyInitialized",
+      "msg": "Global state has already been initialized"
+    }
+  ],
+  "types": [
+    {
+      "name": "CommitmentAccount",
+      "docs": [
+        "Commitment PDA — source of truth for stake, progress, and status."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "owner",
+            "docs": [
+              "Wallet owner of this commitment"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "commitment_id",
+            "docs": [
+              "UUID bytes generated client-side"
+            ],
+            "type": {
+              "array": [
+                "u8",
+                16
+              ]
+            }
+          },
+          {
+            "name": "stake_amount",
+            "docs": [
+              "Original USDC stake amount (6 decimals)"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "remaining_stake",
+            "docs": [
+              "Remaining stake after partial slashing"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "spl_mint",
+            "docs": [
+              "USDC mint address"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "duration_days",
+            "docs": [
+              "Duration of the commitment in days (1-365)"
+            ],
+            "type": "u16"
+          },
+          {
+            "name": "daily_target_minutes",
+            "docs": [
+              "Target minutes per day"
+            ],
+            "type": "u16"
+          },
+          {
+            "name": "current_day",
+            "docs": [
+              "Last day number with a validated proof"
+            ],
+            "type": "u16"
+          },
+          {
+            "name": "failed_count",
+            "docs": [
+              "Number of failures (max 2 = terminated)"
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "early_finish_count",
+            "docs": [
+              "Number of early finishes (>50% but <100% of target)"
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "proof_count",
+            "docs": [
+              "Number of validated proofs submitted"
+            ],
+            "type": "u16"
+          },
+          {
+            "name": "status",
+            "docs": [
+              "Current status of the commitment"
+            ],
+            "type": {
+              "defined": {
+                "name": "CommitmentStatus"
+              }
+            }
+          },
+          {
+            "name": "is_redemption",
+            "docs": [
+              "Whether this is a redemption commitment"
+            ],
+            "type": "bool"
+          },
+          {
+            "name": "created_at",
+            "docs": [
+              "Unix timestamp when commitment was created"
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "bump",
+            "docs": [
+              "PDA bump seed"
+            ],
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "CommitmentCompleted",
+      "docs": [
+        "Emitted when a commitment is successfully completed"
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "commitment",
+            "type": "pubkey"
+          },
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "reward_amount",
+            "type": "u64"
+          },
+          {
+            "name": "penalty_percent",
+            "type": "u8"
+          },
+          {
+            "name": "early_finish_count",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "CommitmentCreated",
+      "docs": [
+        "Emitted when a new commitment is created and USDC is staked"
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "commitment_id",
+            "type": {
+              "array": [
+                "u8",
+                16
+              ]
+            }
+          },
+          {
+            "name": "pda",
+            "type": "pubkey"
+          },
+          {
+            "name": "stake_amount",
+            "type": "u64"
+          },
+          {
+            "name": "duration_days",
+            "type": "u16"
+          },
+          {
+            "name": "daily_target_minutes",
+            "type": "u16"
+          }
+        ]
+      }
+    },
+    {
+      "name": "CommitmentStatus",
+      "docs": [
+        "On-chain commitment status"
+      ],
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Active"
+          },
+          {
+            "name": "Completed"
+          },
+          {
+            "name": "Failed"
+          },
+          {
+            "name": "Redemption"
+          }
+        ]
+      }
+    },
+    {
+      "name": "GlobalInitialized",
+      "docs": [
+        "Emitted when global state and vault are initialized (once at deploy)"
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "global_vault",
+            "type": "pubkey"
+          },
+          {
+            "name": "usdc_mint",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "GlobalStateAccount",
+      "docs": [
+        "Global state PDA — virtual ledger for pool distribution.",
+        "Instead of 4 separate SPL Token Accounts, we use 1 Global Vault (physical)",
+        "+ this PDA to track virtual balances via integers."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "docs": [
+              "Admin/deployer authority who can manage the protocol"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "usdc_mint",
+            "docs": [
+              "USDC mint address"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "global_vault",
+            "docs": [
+              "The single SPL Token Account that holds all protocol USDC"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "charity_balance",
+            "docs": [
+              "Virtual balance — charity pool portion"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "rewards_balance",
+            "docs": [
+              "Virtual balance — rewards pool portion"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "treasury_balance",
+            "docs": [
+              "Virtual balance — treasury pool portion"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "backup_balance",
+            "docs": [
+              "Virtual balance — backup pool portion"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "total_slashed",
+            "docs": [
+              "Total USDC ever slashed across all commitments"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "total_rewarded",
+            "docs": [
+              "Total USDC ever rewarded to users"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "bump",
+            "docs": [
+              "PDA bump seed"
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "vault_bump",
+            "docs": [
+              "Global Vault token account PDA bump"
+            ],
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ProofRecord",
+      "docs": [
+        "On-chain proof record — immutable once created.",
+        "SHA256(proof_url + timestamp + solana_pubkey)"
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "commitment",
+            "docs": [
+              "Reference to the CommitmentAccount PDA"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "day_number",
+            "docs": [
+              "Day number (1-indexed)"
+            ],
+            "type": "u16"
+          },
+          {
+            "name": "proof_hash",
+            "docs": [
+              "SHA256 hash of the proof content"
+            ],
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "actual_minutes",
+            "docs": [
+              "Actual minutes spent on the activity"
+            ],
+            "type": "u16"
+          },
+          {
+            "name": "is_early_finish",
+            "docs": [
+              "Whether this was an early finish (>=50% but <100% of target)"
+            ],
+            "type": "bool"
+          },
+          {
+            "name": "submitted_at",
+            "docs": [
+              "Unix timestamp when proof was submitted"
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "bump",
+            "docs": [
+              "PDA bump seed"
+            ],
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ProofSubmitted",
+      "docs": [
+        "Emitted when a daily proof is submitted on-chain"
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "commitment",
+            "type": "pubkey"
+          },
+          {
+            "name": "day_number",
+            "type": "u16"
+          },
+          {
+            "name": "proof_hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "actual_minutes",
+            "type": "u16"
+          },
+          {
+            "name": "is_early_finish",
+            "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "RedemptionUsed",
+      "docs": [
+        "Emitted when a user redeems a failed commitment"
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "user",
+            "type": "pubkey"
+          },
+          {
+            "name": "old_commitment",
+            "type": "pubkey"
+          },
+          {
+            "name": "new_commitment",
+            "type": "pubkey"
+          },
+          {
+            "name": "redemption_count",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "SlashExecuted",
+      "docs": [
+        "Emitted when a slash is executed (partial or full)"
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "commitment",
+            "type": "pubkey"
+          },
+          {
+            "name": "slashed_amount",
+            "type": "u64"
+          },
+          {
+            "name": "fail_count",
+            "type": "u8"
+          },
+          {
+            "name": "charity_amount",
+            "type": "u64"
+          },
+          {
+            "name": "rewards_amount",
+            "type": "u64"
+          },
+          {
+            "name": "treasury_amount",
+            "type": "u64"
+          },
+          {
+            "name": "backup_amount",
+            "type": "u64"
+          },
+          {
+            "name": "new_status",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "UserProfile",
+      "docs": [
+        "Minimal on-chain user profile — only stores data that affects on-chain logic.",
+        "NOT a duplication of Supabase `users` table."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "owner",
+            "docs": [
+              "Wallet address of the user"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "total_commitments",
+            "docs": [
+              "Total commitments ever created"
+            ],
+            "type": "u16"
+          },
+          {
+            "name": "active_commitments",
+            "docs": [
+              "Number of currently active commitments"
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "total_completed",
+            "docs": [
+              "Total successfully completed commitments"
+            ],
+            "type": "u16"
+          },
+          {
+            "name": "total_failed",
+            "docs": [
+              "Total failed commitments"
+            ],
+            "type": "u16"
+          },
+          {
+            "name": "redemption_count",
+            "docs": [
+              "Number of redemption tokens used"
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "last_redemption_ts",
+            "docs": [
+              "Timestamp of last redemption usage (cooldown: 30 days)"
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "bump",
+            "docs": [
+              "PDA bump seed"
+            ],
+            "type": "u8"
+          }
+        ]
+      }
+    }
+  ]
+}

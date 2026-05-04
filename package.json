@@ -11,6 +11,7 @@
   },
   "devDependencies": {
     "@coral-xyz/anchor": "^0.32.1",
+    "@solana/web3.js": "^1.98.4",
     "@solana/spl-token": "^0.4.14",
     "@types/bn.js": "^5.1.0",
     "@types/chai": "^4.3.0",
