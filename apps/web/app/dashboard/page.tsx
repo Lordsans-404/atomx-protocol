@@ -3,16 +3,12 @@
 import React, { useEffect, useState } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
-import { Activity, Flame, Loader2, Medal, Plus, Target, Trophy, Wallet } from 'lucide-react';
+import { Activity, Flame, Loader2, Medal, Plus, Target, Trophy, Wallet, TrendingDown } from 'lucide-react';
 import Link from 'next/link';
 
 import CreateCommitmentModal from '@/components/dashboard/CreateCommitmentModal';
+import { ChampionMedalCard } from '@/components/dashboard/ChampionMedalCard';
 import { useCommitments, CommitmentData } from '@/hooks/useCommitments';
-
-const MOCK_MEDALS = [
-  { id: 'm1', name: 'Day 1 Warrior', image: 'https://arweave.net/NqP8Z6_xK7rL1L03vAovL0L0KkE1_WdY-m9Y0c7I79s' },
-  { id: 'm2', name: '7-Day Streak', image: 'https://arweave.net/NqP8Z6_xK7rL1L03vAovL0L0KkE1_WdY-m9Y0c7I79s' },
-];
 
 function statusBadge(status: string) {
   switch (status) {
@@ -33,18 +29,37 @@ export default function DashboardPage() {
   const [isMounted, setIsMounted] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const { commitments, isLoading, refetch } = useCommitments();
+  const [medals, setMedals] = useState<any[]>([]);
+  const [isLoadingMedals, setIsLoadingMedals] = useState(true);
 
   // Prevent hydration mismatch
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
+  useEffect(() => {
+    if (!publicKey) return;
+    setIsLoadingMedals(true);
+    fetch(`/api/medals?owner=${publicKey.toBase58()}`)
+      .then(res => res.json())
+      .then(data => {
+        setMedals(data.medals || []);
+      })
+      .catch(err => console.error('Error fetching medals:', err))
+      .finally(() => setIsLoadingMedals(false));
+  }, [publicKey]);
+
   if (!isMounted) return null;
 
+  // Split medals into champion and daily badge categories for separate rendering
+  const championMedals = medals.filter((m) => m.nft_type === 'completion_medal');
+  const dailyBadges = medals.filter((m) => m.nft_type === 'daily_badge');
+
   // Computed stats from real on-chain data
-  const totalStaked = commitments.reduce((sum, c) => sum + c.stakeAmount, 0);
-  const activeCommitments = commitments.filter(c => c.status === 'active');
+  const activeCommitmentsList = commitments.filter(c => c.status === 'active' && !c.isOverdue);
+  const totalActiveStaked = activeCommitmentsList.reduce((sum, c) => sum + c.remainingStake, 0);
   const completedCount = commitments.filter(c => c.status === 'completed').length;
+  const failedCount = commitments.filter(c => c.status === 'failed' || c.status === 'slashed' || (c.status === 'active' && c.isOverdue)).length;
   const totalCount = commitments.length;
   const successRate = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
 
@@ -78,13 +93,21 @@ export default function DashboardPage() {
             </h1>
             <p className="mt-2 text-white/60">Here is your discipline overview.</p>
           </div>
-          <button 
-            onClick={() => setIsCreateModalOpen(true)}
-            className="flex items-center gap-2 px-6 py-3 font-bold text-black uppercase transition-all bg-[#00FFA3] rounded-full hover:bg-[#00FFA3]/90 hover:scale-105 active:scale-95 shadow-[0_0_15px_rgba(0,255,163,0.3)]"
-          >
-            <Plus className="w-5 h-5" />
-            New Commitment
-          </button>
+          <div className="flex items-center gap-4">
+            <Link 
+              href="/dashboard/history"
+              className="px-6 py-3 text-sm font-semibold text-white/70 transition-all border border-white/10 rounded-full hover:bg-white/5 hover:text-white"
+            >
+              View History
+            </Link>
+            <button 
+              onClick={() => setIsCreateModalOpen(true)}
+              className="flex items-center gap-2 px-6 py-3 font-bold text-black uppercase transition-all bg-[#00FFA3] rounded-full hover:bg-[#00FFA3]/90 hover:scale-105 active:scale-95 shadow-[0_0_15px_rgba(0,255,163,0.3)]"
+            >
+              <Plus className="w-5 h-5" />
+              New Commitment
+            </button>
+          </div>
         </div>
 
         {/* Grid Layout */}
@@ -100,21 +123,21 @@ export default function DashboardPage() {
               </h2>
               <div className="space-y-6">
                 <div>
-                  <p className="text-sm text-white/50">Total Value Staked</p>
+                  <p className="text-sm text-white/50">Active Stake</p>
                   <p className="text-3xl font-bold text-white">
-                    {isLoading ? '...' : totalStaked.toFixed(2)} <span className="text-lg text-[#00FFA3]">USDT</span>
+                    {isLoading ? '...' : totalActiveStaked.toFixed(2)} <span className="text-lg text-[#00FFA3]">USDT</span>
                   </p>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="p-4 bg-black/40 rounded-2xl">
-                    <Flame className="w-6 h-6 mb-2 text-orange-500" />
+                  <div className="p-4 bg-black/40 rounded-2xl border border-white/5">
+                    <Flame className="w-6 h-6 mb-2 text-[#00FFA3]" />
                     <p className="text-sm text-white/50">Success Rate</p>
                     <p className="text-xl font-bold text-white">{isLoading ? '...' : `${successRate}%`}</p>
                   </div>
-                  <div className="p-4 bg-black/40 rounded-2xl">
-                    <Trophy className="w-6 h-6 mb-2 text-yellow-500" />
-                    <p className="text-sm text-white/50">Commitments</p>
-                    <p className="text-xl font-bold text-white">{isLoading ? '...' : totalCount}</p>
+                  <div className="p-4 bg-black/40 rounded-2xl border border-white/5">
+                    <TrendingDown className="w-6 h-6 mb-2 text-red-500" />
+                    <p className="text-sm text-white/50">Failed Habits</p>
+                    <p className="text-xl font-bold text-red-500">{isLoading ? '...' : failedCount}</p>
                   </div>
                 </div>
               </div>
@@ -126,22 +149,60 @@ export default function DashboardPage() {
                 <Medal className="w-5 h-5 text-yellow-400" />
                 Medal Showcase
               </h2>
-              <div className="grid grid-cols-3 gap-4">
-                {MOCK_MEDALS.map((medal) => (
-                  <div key={medal.id} className="flex flex-col items-center group">
-                    <div className="w-16 h-16 p-1 mb-2 transition-transform border-2 border-yellow-500/50 rounded-xl group-hover:scale-110 group-hover:border-yellow-400 shadow-[0_0_10px_rgba(234,179,8,0.2)]">
-                      <img src={medal.image} alt={medal.name} className="w-full h-full object-cover rounded-lg" />
-                    </div>
-                    <p className="text-xs text-center text-white/70 line-clamp-2">{medal.name}</p>
-                  </div>
-                ))}
-                {/* Empty Slot */}
-                <div className="flex flex-col items-center">
-                  <div className="flex items-center justify-center w-16 h-16 mb-2 border border-dashed rounded-xl border-white/20 bg-white/5">
-                    <span className="text-2xl text-white/20">?</span>
-                  </div>
+              {isLoadingMedals ? (
+                <div className="flex justify-center py-6">
+                  <Loader2 className="w-6 h-6 text-yellow-400 animate-spin" />
                 </div>
-              </div>
+              ) : medals.length === 0 ? (
+                <div className="flex flex-col items-center py-4">
+                  <p className="text-sm text-white/50 text-center">No medals yet.<br/>Complete challenges to earn cNFTs!</p>
+                </div>
+              ) : (
+                <div className="space-y-6">
+                  {/* Champion Medals — featured row with gold treatment */}
+                  {championMedals.length > 0 && (
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-yellow-500/80 mb-3">
+                        🏆 Champion
+                      </p>
+                      <div className="grid grid-cols-3 gap-4">
+                        {championMedals.map((medal) => (
+                          <ChampionMedalCard key={medal.mint_address} medal={medal} />
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Daily Badges — standard grid */}
+                  {dailyBadges.length > 0 && (
+                    <div>
+                      {championMedals.length > 0 && (
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-white/30 mb-3">
+                          Daily Badges
+                        </p>
+                      )}
+                      <div className="grid grid-cols-3 gap-4">
+                        {dailyBadges.map((medal) => (
+                          <div key={medal.mint_address} className="flex flex-col items-center group">
+                            <div className="w-16 h-16 p-1 mb-2 transition-transform border-2 border-yellow-500/50 rounded-xl group-hover:scale-110 group-hover:border-yellow-400 shadow-[0_0_10px_rgba(234,179,8,0.2)]">
+                              <img src={medal.image_url} alt={medal.name} className="w-full h-full object-cover rounded-lg bg-black/50" />
+                            </div>
+                            <p className="text-xs text-center text-white/70 line-clamp-2" title={medal.name}>{medal.name}</p>
+                          </div>
+                        ))}
+                        {/* Empty slot filler for aesthetics */}
+                        {dailyBadges.length < 3 && Array.from({ length: 3 - dailyBadges.length }).map((_, i) => (
+                          <div key={`empty-${i}`} className="flex flex-col items-center">
+                            <div className="flex items-center justify-center w-16 h-16 mb-2 border border-dashed rounded-xl border-white/20 bg-white/5">
+                              <span className="text-2xl text-white/20">?</span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </div>
 
@@ -158,24 +219,24 @@ export default function DashboardPage() {
                   <Loader2 className="w-10 h-10 mb-4 text-[#00FFA3] animate-spin" />
                   <p className="text-white/50">Loading commitments from blockchain...</p>
                 </div>
-              ) : commitments.length === 0 ? (
+              ) : activeCommitmentsList.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-20">
                   <div className="w-20 h-20 mb-6 rounded-full bg-white/5 flex items-center justify-center border border-dashed border-white/20">
                     <Target className="w-10 h-10 text-white/20" />
                   </div>
-                  <p className="mb-2 text-lg font-semibold text-white/70">No commitments yet</p>
-                  <p className="mb-6 text-sm text-white/40">Create your first commitment to start your discipline journey!</p>
+                  <p className="mb-2 text-lg font-semibold text-white/70">No active commitments</p>
+                  <p className="mb-6 text-sm text-white/40">You don't have any ongoing challenges right now.</p>
                   <button
                     onClick={() => setIsCreateModalOpen(true)}
                     className="flex items-center gap-2 px-6 py-3 text-sm font-bold text-black uppercase bg-[#00FFA3] rounded-full hover:bg-[#00FFA3]/90 transition-all"
                   >
                     <Plus className="w-4 h-4" />
-                    Create Commitment
+                    Start New Challenge
                   </button>
                 </div>
               ) : (
                 <div className="space-y-6">
-                  {commitments.map((commitment) => {
+                  {activeCommitmentsList.map((commitment) => {
                     const progressPercentage = commitment.durationDays > 0
                       ? Math.min((commitment.proofCount / commitment.durationDays) * 100, 100)
                       : 0;
@@ -260,10 +321,12 @@ export default function DashboardPage() {
                             className={`px-6 py-2 text-sm font-semibold transition-all border rounded-full ${
                               commitment.isOverdue
                                 ? 'text-red-300 border-red-500/30 hover:bg-red-500 hover:text-white hover:border-red-500 animate-pulse'
+                                : commitment.proofCount >= commitment.durationDays && commitment.status === 'active'
+                                ? 'text-black bg-[#00FFA3] hover:scale-105 shadow-[0_0_15px_rgba(0,255,163,0.3)]'
                                 : 'text-white border-white/20 hover:bg-[#00FFA3] hover:text-black hover:border-[#00FFA3]'
                             }`}
                           >
-                            {commitment.isOverdue ? '🔥 Submit Proof Now!' : commitment.status === 'active' ? 'Start Timer / Upload Proof' : 'View Details'}
+                            {commitment.isOverdue ? '🔥 Submit Proof Now!' : commitment.proofCount >= commitment.durationDays && commitment.status === 'active' ? '🎉 Claim Rewards!' : 'Start Timer / Upload Proof'}
                           </Link>
                         </div>
                       </div>

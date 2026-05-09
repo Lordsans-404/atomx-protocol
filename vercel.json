@@ -1,0 +1,12 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/check-deadlines",
+      "schedule": "0 0 * * *"
+    },
+    {
+      "path": "/api/cron/batch-slash",
+      "schedule": "0 0 */3 * *"
+    }
+  ]
+}

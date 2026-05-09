@@ -2,14 +2,15 @@ import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabaseAdmin';
 import { Connection, PublicKey } from '@solana/web3.js';
 import { BorshCoder, EventParser } from '@coral-xyz/anchor';
-// Mengambil IDL langsung dari folder program yang kita buat
+import { mintCompletionMedal } from '@/lib/mintCompletionMedal';
+// Import the compiled IDL to parse on-chain Anchor events
 import idl from '@/lib/idl.json';
 
 const PROGRAM_ID = new PublicKey('3nrc4dPYdhztn9d82QmrznATBbYEi9hhvRyx6AnHVGk9');
 const coder = new BorshCoder(idl as any);
 const eventParser = new EventParser(PROGRAM_ID, coder);
 
-// Gunakan Helius RPC untuk fetch tx details (stabil, tanpa rate limit)
+// Use Helius RPC for stable tx detail fetching without rate limits
 const RPC_URL = process.env.NEXT_PUBLIC_SOLANA_RPC_URL || 'https://api.devnet.solana.com';
 const connection = new Connection(RPC_URL, 'confirmed');
 
@@ -102,23 +103,49 @@ export async function POST(request: Request) {
                     }
                 }
                 else if (event.name === 'CommitmentCompleted') {
-                    const { data: commitment } = await supabaseAdmin.from('commitments').select('id, user_id').eq('pda_address', event.data.commitment.toString()).single();
+                    // Fetch full commitment details including user pubkey for minting
+                    const { data: commitment } = await supabaseAdmin
+                        .from('commitments')
+                        .select('id, user_id, title, category, duration_days, users(solana_pubkey)')
+                        .eq('pda_address', event.data.commitment.toString())
+                        .single();
 
                     const rawReward = event.data.rewardAmount || event.data.reward_amount;
                     const rewardAmt = rawReward?.toNumber ? rawReward.toNumber() : Number(rawReward);
+                    const earlyFinishCount = event.data.earlyFinishCount ?? event.data.early_finish_count ?? 0;
 
-                    if (commitment && rewardAmt > 0) {
-                        // Insert reward log
-                        await supabaseAdmin.from('rewards').insert({
-                            commitment_id: commitment.id,
-                            user_id: commitment.user_id,
-                            reward_type: 'loyalty_bonus',
-                            amount: rewardAmt,
-                            spl_mint_address: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
-                            tx_signature: tx.signature,
-                            claimed_at: new Date().toISOString()
-                        });
-                        console.log('✅ Berhasil mencatat Reward Claimed di DB');
+                    if (commitment) {
+                        // Mark commitment as completed in Supabase
+                        await supabaseAdmin.from('commitments').update({ status: 'completed' }).eq('id', commitment.id);
+                        console.log('✅ Commitment status updated to completed in DB');
+
+                        if (rewardAmt > 0) {
+                            // Record the loyalty bonus reward for financial transparency
+                            await supabaseAdmin.from('rewards').insert({
+                                commitment_id: commitment.id,
+                                user_id: commitment.user_id,
+                                reward_type: 'loyalty_bonus',
+                                amount: rewardAmt,
+                                spl_mint_address: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
+                                tx_signature: tx.signature,
+                                claimed_at: new Date().toISOString(),
+                            });
+                            console.log('✅ Reward claim recorded in DB');
+                        }
+
+                        // Mint a unique Champion Medal cNFT for completing the full commitment
+                        const userPubkey = (commitment.users as any)?.solana_pubkey;
+                        if (userPubkey && process.env.CROSSMINT_API_KEY) {
+                            await mintCompletionMedal({
+                                userPubkey,
+                                commitmentId: commitment.id,
+                                title: commitment.title ?? 'My Commitment',
+                                category: commitment.category ?? 'other',
+                                durationDays: commitment.duration_days ?? 0,
+                                earlyFinishCount,
+                                txSignature: tx.signature,
+                            });
+                        }
                     }
                 }
                 else if (event.name === 'ProofSubmitted') {
@@ -146,43 +173,50 @@ export async function POST(request: Request) {
                             console.log('✅ Berhasil mencatat anti-plagiat image_hash di DB');
                         }
 
-                        console.log(`🚀 [Gamification] Minting cNFT Badge Day ${dayNumber} untuk ${userPubkey}...`);
+                        console.log(`🚀 [Gamification] Minting daily badge cNFT for Day ${dayNumber} — wallet: ${userPubkey}`);
+
+                        // Use placehold.co for fast, dependency-free badge images
+                        const badgeImageUrl = `https://placehold.co/600x600/6366f1/ffffff/png?text=Day+${dayNumber}`;
+
 
                         // 2. Mint cNFT menggunakan Crossmint API (Staging/Devnet)
                         try {
                             const collectionId = process.env.CROSSMINT_COLLECTION_ID || 'default';
-                            const crossmintRes = await fetch(`https://staging.crossmint.com/api/2022-06-09/collections/${collectionId}/nfts`, {
-                                method: 'POST',
-                                headers: {
-                                    'x-api-key': process.env.CROSSMINT_API_KEY,
-                                    'Content-Type': 'application/json'
-                                },
-                                body: JSON.stringify({
-                                    recipient: `solana:${userPubkey}`,
-                                    metadata: {
-                                        name: `Atomx Daily Validator - Day ${dayNumber}`,
-                                        image: "https://arweave.net/NqP8Z6_xK7rL1L03vAovL0L0KkE1_WdY-m9Y0c7I79s", // Gambar dummy medali
-                                        description: `Medali apresiasi karena telah konsisten menyelesaikan komitmen pada hari ke-${dayNumber}.`
+                            const crossmintRes = await fetch(
+                                `https://staging.crossmint.com/api/2022-06-09/collections/${collectionId}/nfts`,
+                                {
+                                    method: 'POST',
+                                    headers: {
+                                        'x-api-key': process.env.CROSSMINT_API_KEY,
+                                        'Content-Type': 'application/json'
                                     },
-                                    compressed: true // INI YANG BIKIN JADI COMPRESSED NFT (MURAH MERIAH)
-                                })
-                            });
+                                    body: JSON.stringify({
+                                        recipient: `solana:${userPubkey}`,
+                                        metadata: {
+                                            name: `Atomx Daily Validator - Day ${dayNumber}`,
+                                            image: badgeImageUrl,
+                                            description: `Daily discipline badge awarded for completing Day ${dayNumber} of this commitment on Atomx Protocol.`,
+                                        },
+                                        compressed: true
+                                    })
+                                }
+                            );
 
                             if (crossmintRes.ok) {
                                 const mintData = await crossmintRes.json();
-                                console.log('✅ [Gamification] cNFT berhasil dicetak! ID:', mintData.id);
+                                console.log('✅ [Gamification] Daily badge cNFT minted. ID:', mintData.id);
 
-                                // 3. Simpan ke database kita agar frontend bisa nampilin dengan cepat
+                                // Cache the new badge so the dashboard renders it instantly
                                 await supabaseAdmin.from('nft_index_cache').insert({
                                     mint_address: mintData.id,
                                     owner_pubkey: userPubkey,
                                     name: `Atomx Daily Validator - Day ${dayNumber}`,
-                                    image_url: "https://arweave.net/NqP8Z6_xK7rL1L03vAovL0L0KkE1_WdY-m9Y0c7I79s",
+                                    image_url: badgeImageUrl,
                                     nft_type: 'daily_badge',
-                                    commitment_id: commitmentInfo.id
+                                    commitment_id: commitmentInfo.id,
                                 });
                             } else {
-                                console.error('❌ Gagal mint cNFT dari Crossmint:', await crossmintRes.text());
+                                console.error('❌ [Gamification] Crossmint mint failed:', await crossmintRes.text());
                             }
                         } catch (err) {
                             console.error('❌ Error memanggil Crossmint:', err);

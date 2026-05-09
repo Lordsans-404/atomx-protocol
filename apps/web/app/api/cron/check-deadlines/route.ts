@@ -25,7 +25,7 @@ export async function GET(request: Request) {
   try {
     // Auth check: pakai secret header untuk prevent unauthorized calls
     const auth = request.headers.get('authorization');
-    
+
     if (auth !== `Bearer ${process.env.CRON_SECRET}`) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -114,9 +114,9 @@ export async function GET(request: Request) {
           newStatus = 'failed';
           slashPercent = 100;
         } else if (failedCount === 0) {
-          // First failure: 40% slash, masih aktif
-          action = 'partial_slash';
-          newStatus = 'active';
+          // First failure: 40% slash, tapi kita bikin inactive (failed) sesuai request
+          action = 'partial_slash_and_terminate';
+          newStatus = 'failed';
           slashPercent = 40;
         } else {
           // Second failure: full slash, failed
