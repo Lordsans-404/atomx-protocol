@@ -181,8 +181,8 @@ export default function DashboardPage() {
                           Daily Badges
                         </p>
                       )}
-                      <div className="grid grid-cols-3 gap-4">
-                        {dailyBadges.map((medal) => (
+                      <div className="grid grid-cols-3 gap-4 mb-4">
+                        {dailyBadges.slice(0, 3).map((medal) => (
                           <div key={medal.mint_address} className="flex flex-col items-center group">
                             <div className="w-16 h-16 p-1 mb-2 transition-transform border-2 border-yellow-500/50 rounded-xl group-hover:scale-110 group-hover:border-yellow-400 shadow-[0_0_10px_rgba(234,179,8,0.2)]">
                               <img src={medal.image_url} alt={medal.name} className="w-full h-full object-cover rounded-lg bg-black/50" />
@@ -199,6 +199,13 @@ export default function DashboardPage() {
                           </div>
                         ))}
                       </div>
+                      {dailyBadges.length > 3 && (
+                        <div className="flex justify-center mt-2">
+                          <Link href="/dashboard/daily-badges" className="text-xs text-white/50 hover:text-white hover:underline transition-colors">
+                            View all {dailyBadges.length} daily badges →
+                          </Link>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>

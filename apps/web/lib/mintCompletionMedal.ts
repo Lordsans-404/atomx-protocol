@@ -1,6 +1,8 @@
 import { supabaseAdmin } from '@/lib/supabaseAdmin';
 
-/** Color palette mapped by habit category for the placehold.co medal image. */
+
+
+/** Color palette mapped by habit category for fallback or reference. */
 const CATEGORY_COLORS: Record<string, string> = {
   reading: '4f46e5',
   exercise: '16a34a',
@@ -22,22 +24,47 @@ export interface CompletionMedalParams {
   txSignature: string;
 }
 
+function getMedalTier(earlyFinishCount: number) {
+  if (earlyFinishCount === 0) return { name: 'Gold' };
+  if (earlyFinishCount <= 2) return { name: 'Silver' };
+  return { name: 'Bronze' };
+}
+
 /**
  * Builds the Crossmint-compatible metadata for a Champion Medal cNFT.
- * Uses placehold.co for the image, colored per habit category.
+ * Uses placehold.co for the image, styled according to the medal tier.
  */
-function buildMedalMetadata(params: CompletionMedalParams) {
+export function buildMedalMetadata(params: CompletionMedalParams) {
   const { title, category, durationDays, earlyFinishCount } = params;
-  const color = CATEGORY_COLORS[category?.toLowerCase()] ?? CATEGORY_COLORS.default;
-  const imageUrl = `https://placehold.co/600x600/${color}/ffffff/png?text=Champion%0A${encodeURIComponent(title)}%0A${durationDays}+Days`;
+  const tier = getMedalTier(earlyFinishCount);
+
+  // Use tier color for the background to make it instantly recognizable
+  const imageUrl = `https://image-place.vercel.app/medal/${tier.name.toLowerCase()}?text=${encodeURIComponent(title)}+%7C+${durationDays}+Days&color=ffd700&bg=1a1a2e00&w=400&h=400&fontsize=48`;
+  // Lanjutin yaa ini belum kelarrr
+
+
+  const fullName = `Atomx ${tier.name} — ${title}`;
+
+  // Crossmint API requires the name to be <= 32 bytes UTF-8 encoded
+  let truncatedName = '';
+  let bytesCount = 0;
+  const encoder = new TextEncoder();
+  for (const char of fullName) {
+    const charBytes = encoder.encode(char).length;
+    if (bytesCount + charBytes > 32) break;
+    truncatedName += char;
+    bytesCount += charBytes;
+  }
+  truncatedName = truncatedName.trim();
 
   return {
-    name: `Atomx Champion — ${title}`,
+    name: truncatedName,
     symbol: 'ATOMX-CHAMP',
-    description: `Awarded to a warrior who completed a ${durationDays}-day commitment on Atomx Protocol. Stakes earned, discipline proven.`,
+    description: `Awarded to a warrior who completed a ${durationDays}-day commitment on Atomx Protocol. A ${tier.name} medal achieved with ${earlyFinishCount} early finishes.`,
     image: imageUrl,
     attributes: [
       { trait_type: 'Type', value: 'Champion Medal' },
+      { trait_type: 'Tier', value: tier.name },
       { trait_type: 'Duration', value: `${durationDays} Days` },
       { trait_type: 'Habit Category', value: category },
       { trait_type: 'Early Finishes', value: String(earlyFinishCount) },

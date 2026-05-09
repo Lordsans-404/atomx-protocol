@@ -152,7 +152,7 @@ export async function POST(request: Request) {
                     // 1. Ambil relasi dari database untuk mendapatkan solana_pubkey milik user
                     // Karena di event ini yang ada hanya pubkey komitmen-nya
                     const { data: commitmentInfo } = await supabaseAdmin.from('commitments')
-                        .select('id, users(solana_pubkey, id)')
+                        .select('id, users(solana_pubkey, id),title')
                         .eq('pda_address', event.data.commitment.toString())
                         .single();
 
@@ -176,10 +176,10 @@ export async function POST(request: Request) {
                         console.log(`🚀 [Gamification] Minting daily badge cNFT for Day ${dayNumber} — wallet: ${userPubkey}`);
 
                         // Use placehold.co for fast, dependency-free badge images
-                        const badgeImageUrl = `https://placehold.co/600x600/6366f1/ffffff/png?text=Day+${dayNumber}`;
+                        const badgeImageUrl = `https://image-place.vercel.app/sertifikat?text=${commitmentInfo.title}+%7C+Day+${dayNumber}&color=ffd700&bg=1a1a2e00&w=400&h=400&fontsize=32`;
 
 
-                        // 2. Mint cNFT menggunakan Crossmint API (Staging/Devnet)
+                        // 2. Mint cNFT menggunakan Crossmint API (Staging/Devnet)`
                         try {
                             const collectionId = process.env.CROSSMINT_COLLECTION_ID || 'default';
                             const crossmintRes = await fetch(
@@ -193,9 +193,9 @@ export async function POST(request: Request) {
                                     body: JSON.stringify({
                                         recipient: `solana:${userPubkey}`,
                                         metadata: {
-                                            name: `Atomx Daily Validator - Day ${dayNumber}`,
+                                            name: `Daily Commit - ${commitmentInfo.title} - #${dayNumber}`,
                                             image: badgeImageUrl,
-                                            description: `Daily discipline badge awarded for completing Day ${dayNumber} of this commitment on Atomx Protocol.`,
+                                            description: `Daily discipline badge awarded for completing Day ${dayNumber} of ${commitmentInfo.title} on Atomx Protocol.`,
                                         },
                                         compressed: true
                                     })
@@ -210,7 +210,7 @@ export async function POST(request: Request) {
                                 await supabaseAdmin.from('nft_index_cache').insert({
                                     mint_address: mintData.id,
                                     owner_pubkey: userPubkey,
-                                    name: `Atomx Daily Validator - Day ${dayNumber}`,
+                                    name: `Daily Commit - ${commitmentInfo.title} - #${dayNumber}`,
                                     image_url: badgeImageUrl,
                                     nft_type: 'daily_badge',
                                     commitment_id: commitmentInfo.id,
