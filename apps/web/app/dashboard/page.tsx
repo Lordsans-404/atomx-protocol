@@ -3,10 +3,11 @@
 import React, { useEffect, useState } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
-import { Activity, Flame, Loader2, Medal, Plus, Target, Trophy, Wallet, TrendingDown } from 'lucide-react';
+import { Activity, ArrowDownUp, Flame, Loader2, Medal, Plus, Target, Trophy, Wallet, TrendingDown } from 'lucide-react';
 import Link from 'next/link';
 
 import CreateCommitmentModal from '@/components/dashboard/CreateCommitmentModal';
+import SwapModal from '@/components/SwapModal';
 import { ChampionMedalCard } from '@/components/dashboard/ChampionMedalCard';
 import { useCommitments, CommitmentData } from '@/hooks/useCommitments';
 
@@ -28,6 +29,7 @@ export default function DashboardPage() {
   const { connected, publicKey } = useWallet();
   const [isMounted, setIsMounted] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isSwapModalOpen, setIsSwapModalOpen] = useState(false);
   const { commitments, isLoading, refetch } = useCommitments();
   const [medals, setMedals] = useState<any[]>([]);
   const [isLoadingMedals, setIsLoadingMedals] = useState(true);
@@ -100,6 +102,15 @@ export default function DashboardPage() {
             >
               View History
             </Link>
+            {/* Get USDT — only shown in dashboard after wallet is connected */}
+            <button
+              id="dashboard-get-usdt-btn"
+              onClick={() => setIsSwapModalOpen(true)}
+              className="flex items-center gap-2 px-6 py-3 text-sm font-bold text-[#00FFA3] border border-[#00FFA3]/30 rounded-full transition-all hover:bg-[#00FFA3]/10 hover:border-[#00FFA3]/60 hover:scale-105 active:scale-95"
+            >
+              <ArrowDownUp className="w-4 h-4" />
+              Get USDT
+            </button>
             <button 
               onClick={() => setIsCreateModalOpen(true)}
               className="flex items-center gap-2 px-6 py-3 font-bold text-black uppercase transition-all bg-[#00FFA3] rounded-full hover:bg-[#00FFA3]/90 hover:scale-105 active:scale-95 shadow-[0_0_15px_rgba(0,255,163,0.3)]"
@@ -355,6 +366,12 @@ export default function DashboardPage() {
           // Refetch commitments from blockchain
           setTimeout(() => refetch(), 2000);
         }}
+      />
+
+      {/* Devnet SOL → USDT swap — only mounted in dashboard, only accessible when wallet is connected */}
+      <SwapModal
+        isOpen={isSwapModalOpen}
+        onClose={() => setIsSwapModalOpen(false)}
       />
     </>
   );
