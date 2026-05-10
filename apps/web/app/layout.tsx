@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Playfair_Display } from "next/font/google";
+import { Geist, Geist_Mono, Space_Grotesk } from "next/font/google"; // updated, swap display font to match Stitch typography
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import { WalletProvider } from "@/components/providers/WalletProvider";
@@ -14,11 +14,10 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const playfair = Playfair_Display({
+const playfair = Space_Grotesk({ // updated, reuse the existing display variable name for dashboard headings
   variable: "--font-playfair",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  style: ["normal", "italic"],
+  weight: ["400", "500", "700"],
 });
 
 export const metadata: Metadata = {
@@ -36,10 +35,10 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} ${playfair.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-black text-white relative">
+      <body className="relative flex min-h-full flex-col bg-background text-foreground"> {/* updated, use shared Stitch-like surface tokens at the app shell */}
         <WalletProvider>
           <Navbar />
-          <main className="flex-1 pt-20">
+          <main className="flex-1 w-full flex flex-col">
             {children}
           </main>
         </WalletProvider>

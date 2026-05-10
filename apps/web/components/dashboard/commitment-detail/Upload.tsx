@@ -32,20 +32,20 @@ export const ProofUpload: React.FC<ProofUploadProps> = ({
   onBack,
 }) => {
   return (
-    <div className="p-8 border bg-white/5 backdrop-blur-xl border-white/10 rounded-3xl shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
+    <div className="w-full flex flex-col items-center justify-center">
       <div className="flex items-center gap-3 mb-2">
-        <div className="p-2 bg-[#00FFA3]/10 rounded-lg">
-          <Camera className="w-6 h-6 text-[#00FFA3]" />
+        <div className="p-2 bg-primary/10 rounded-lg">
+          <Camera className="w-6 h-6 text-primary" />
         </div>
-        <h2 className="text-2xl font-bold text-white font-playfair">Upload Proof</h2>
+        <h2 className="text-2xl font-bold text-foreground font-headline-card">Upload Proof</h2>
       </div>
-      <p className="mb-8 text-sm text-white/40">
-        Upload a screenshot or photo showing your activity. Timer: <span className="text-[#00FFA3] font-semibold">{formatTime(elapsedSeconds)}</span> ({elapsedMinutes} min)
+      <p className="mb-8 text-sm text-muted-foreground text-center">
+        Upload a screenshot or photo showing your activity. Timer: <span className="text-primary font-semibold">{formatTime(elapsedSeconds)}</span> ({elapsedMinutes} min)
       </p>
 
       {submitError && (
-        <div className="flex items-center gap-3 p-4 mb-6 text-sm text-red-300 border rounded-xl bg-red-500/10 border-red-500/20 animate-in fade-in slide-in-from-top-2">
-          <AlertTriangle className="w-5 h-5 shrink-0 text-red-400" /> {submitError}
+        <div className="w-full max-w-md flex items-center gap-3 p-4 mb-6 text-sm text-error bg-error/10 border border-error/20 rounded-xl justify-center animate-in fade-in slide-in-from-top-2">
+          <AlertTriangle className="w-5 h-5 shrink-0" /> {submitError}
         </div>
       )}
 
@@ -62,18 +62,18 @@ export const ProofUpload: React.FC<ProofUploadProps> = ({
       {!proofImage ? (
         <button
           onClick={() => fileInputRef.current?.click()}
-          className="flex flex-col items-center justify-center w-full gap-4 py-20 transition-all border-2 border-dashed rounded-2xl border-white/10 hover:border-[#00FFA3]/50 hover:bg-[#00FFA3]/5 group bg-black/20"
+          className="flex flex-col items-center justify-center w-full max-w-md gap-4 py-20 transition-all border-2 border-dashed rounded-2xl border-white/10 hover:border-primary/50 hover:bg-primary/5 group bg-card/40"
         >
           <div className="p-4 bg-white/5 rounded-full group-hover:scale-110 transition-transform duration-300">
-            <Upload className="w-10 h-10 text-white/30 group-hover:text-[#00FFA3] transition-colors" />
+            <Upload className="w-10 h-10 text-white/30 group-hover:text-primary transition-colors" />
           </div>
           <div className="text-center">
-            <p className="text-lg font-semibold text-white/70 group-hover:text-white">Click to upload proof</p>
-            <p className="text-sm text-white/30 mt-1">JPG, PNG • Max 5MB</p>
+            <p className="text-lg font-headline-card text-white/70 group-hover:text-white">Click to upload proof</p>
+            <p className="text-sm text-white/30 mt-1 font-body-main">JPG, PNG • Max 5MB</p>
           </div>
         </button>
       ) : (
-        <div className="relative group">
+        <div className="relative group w-full max-w-md">
           <div className="overflow-hidden rounded-2xl border border-white/10 bg-black/40">
             <img 
               src={proofImage} 
@@ -83,7 +83,7 @@ export const ProofUpload: React.FC<ProofUploadProps> = ({
           </div>
           <button
             onClick={onRemoveImage}
-            className="absolute p-2 transition-all bg-black/60 backdrop-blur-md rounded-full top-4 right-4 hover:bg-red-500 hover:scale-110 border border-white/10"
+            className="absolute p-2 transition-all bg-black/60 backdrop-blur-md rounded-full top-4 right-4 hover:bg-error hover:scale-110 border border-white/10"
             title="Remove image"
           >
             <X className="w-5 h-5 text-white" />
@@ -92,19 +92,19 @@ export const ProofUpload: React.FC<ProofUploadProps> = ({
       )}
 
       {/* Action Buttons */}
-      <div className="flex flex-col sm:flex-row gap-4 mt-10">
+      <div className="flex flex-col sm:flex-row gap-4 mt-10 w-full max-w-md">
         <button
           onClick={onBack}
-          className="px-8 py-3 font-semibold text-white/60 transition-all border border-white/10 rounded-full hover:text-white hover:bg-white/5 hover:border-white/20 order-2 sm:order-1"
+          className="px-8 py-4 font-headline-card text-lg text-muted-foreground transition-all border border-white/10 rounded-xl hover:text-foreground hover:bg-white/5 order-2 sm:order-1 flex-1 flex items-center justify-center"
         >
-          ← Back to Timer
+          ← Back
         </button>
         {proofImage && (
           <button
             onClick={onValidate}
-            className="flex items-center justify-center gap-2 px-10 py-3 font-bold text-black uppercase bg-[#00FFA3] rounded-full hover:bg-[#00FFA3]/90 transition-all hover:scale-105 shadow-[0_0_20px_rgba(0,255,163,0.3)] order-1 sm:order-2 flex-1"
+            className="flex items-center justify-center gap-2 px-8 py-4 font-headline-card text-lg text-on-primary bg-primary rounded-xl hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_0_20px_rgba(78,222,163,0.3)] order-1 sm:order-2 flex-1"
           >
-            <Shield className="w-5 h-5" /> Validate with AI
+            <Shield className="w-5 h-5" /> Validate
           </button>
         )}
       </div>

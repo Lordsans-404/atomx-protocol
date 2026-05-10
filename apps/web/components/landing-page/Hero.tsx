@@ -264,7 +264,7 @@ function AtomBackground() {
 
 export default function Hero() {
   return (
-    <section className="relative flex flex-col items-center justify-center min-h-screen px-4 pt-32 pb-20 overflow-hidden w-full">
+    <section className="relative flex flex-col items-center justify-center min-h-screen px-4 pt-46 pb-20 overflow-hidden w-full">
       {/* Dark background */}
       <div className="absolute inset-0 z-[-1] bg-[#09090b]">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-[#00FFA3]/5 via-[#09090b] to-[#09090b]"></div>

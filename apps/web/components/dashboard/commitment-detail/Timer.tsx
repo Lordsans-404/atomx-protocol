@@ -42,134 +42,99 @@ export const TimerSection: React.FC<TimerSectionProps> = ({
   formatTime,
 }) => {
   return (
-    <div className="p-8 border bg-white/5 backdrop-blur-xl border-white/10 rounded-3xl shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
-      <h2 className="flex items-center gap-2 mb-8 text-2xl font-bold text-center text-white font-playfair justify-center">
-        <Clock className="w-6 h-6 text-[#00FFA3]" />
-        Daily Timer — Day {daysCompleted + 1}
-      </h2>
-
-      <div className="flex flex-col items-center">
-        {/* Circular Progress Timer */}
-        <div className="relative w-64 h-64 mb-8">
-          <svg className="w-full h-full -rotate-90" viewBox="0 0 200 200">
-            <circle cx="100" cy="100" r="90" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="8" />
-            <circle 
-              cx="100" cy="100" r="90" fill="none" 
-              stroke={timerProgress >= 100 ? '#00FFA3' : timerProgress >= 50 ? '#facc15' : '#ef4444'}
-              strokeWidth="8" strokeLinecap="round"
-              strokeDasharray={`${2 * Math.PI * 90}`}
-              strokeDashoffset={`${2 * Math.PI * 90 * (1 - timerProgress / 100)}`}
-              className="transition-all duration-500"
-              style={{ filter: timerProgress >= 100 ? 'drop-shadow(0 0 8px rgba(0,255,163,0.5))' : 'none' }}
-            />
-          </svg>
-          <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <p className="text-5xl font-bold text-white font-mono tracking-wider">{formatTime(elapsedSeconds)}</p>
-            <p className="mt-2 text-sm text-white/40">{elapsedMinutes} / {targetMinutes} min</p>
-          </div>
+    <div className="w-full flex flex-col items-center justify-center">
+        <div className="relative w-72 h-72 md:w-96 md:h-96 flex items-center justify-center mb-8">
+            {/* Progress Ring (SVG) */}
+            <svg className="absolute inset-0 w-full h-full -rotate-90">
+                <circle className="stroke-white/5 fill-none" cx="50%" cy="50%" r="46%" strokeWidth="12"></circle>
+                <circle 
+                    className="fill-none transition-all duration-500" 
+                    cx="50%" cy="50%" r="46%" 
+                    pathLength="100"
+                    stroke={timerProgress >= 100 ? '#4edea3' : timerProgress >= 50 ? '#facc15' : '#ef4444'}
+                    strokeDasharray="100"
+                    strokeDashoffset={100 - timerProgress} 
+                    strokeLinecap="round" strokeWidth="12">
+                </circle>
+            </svg>
+            {/* Inner Glow */}
+            <div className={`absolute inset-4 rounded-full ${timerProgress >= 100 ? 'bg-primary/10 shadow-[0_0_60px_rgba(78,222,163,0.3)]' : 'bg-primary/5 shadow-[0_0_60px_rgba(78,222,163,0.1)]'} flex flex-col items-center justify-center transition-all duration-500`}>
+                <span className="font-display-timer text-5xl md:text-[80px] text-foreground tracking-tighter mb-2">{formatTime(elapsedSeconds)}</span>
+                <span className="font-label-caps text-primary tracking-widest uppercase">DAY {daysCompleted + 1}</span>
+            </div>
         </div>
 
-        {/* Dynamic Hints and Status Messages */}
-        <div className="min-h-[60px] flex flex-col items-center justify-center mb-6">
-          {timerState === 'idle' && (
-            <p className="text-sm text-center text-white/40 max-w-sm">
-              Start the timer when you begin your activity. You need at least{' '}
-              <span className="text-[#00FFA3] font-semibold">{minimumMinutes} minutes</span>{' '}
-              (50% of target) to pass.
+        <div className="w-full max-w-sm flex flex-col gap-4">
+            {timerState === 'idle' && (
+                <button 
+                    onClick={onStart} 
+                    className="w-full py-5 rounded-2xl bg-primary text-on-primary font-headline-card text-xl shadow-[0_0_30px_rgba(78,222,163,0.3)] hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3">
+                    <Play className="w-8 h-8 fill-current" />
+                    Start Session
+                </button>
+            )}
+
+            {timerState === 'running' && (
+                <>
+                    <button 
+                        onClick={onPause} 
+                        className="w-full py-4 rounded-2xl bg-surface-variant text-foreground border border-white/10 font-headline-card text-lg hover:bg-white/5 transition-all flex items-center justify-center gap-3">
+                        <Pause className="w-6 h-6 fill-current" />
+                        Pause
+                    </button>
+                    <button
+                        onClick={onFinish}
+                        disabled={!canFinish}
+                        className={`w-full py-5 rounded-2xl font-headline-card text-xl transition-all flex items-center justify-center gap-3 ${
+                        canFinish
+                            ? 'bg-primary text-on-primary shadow-[0_0_30px_rgba(78,222,163,0.3)] hover:scale-[1.02] active:scale-[0.98] cursor-pointer'
+                            : 'bg-primary/20 text-primary/40 cursor-not-allowed'
+                        }`}>
+                        <CheckCircle2 className="w-7 h-7" />
+                        Finish & Upload
+                    </button>
+                </>
+            )}
+
+            {timerState === 'paused' && (
+                <div className="grid grid-cols-2 gap-4">
+                    <button 
+                        onClick={onResume} 
+                        className="py-4 rounded-xl bg-primary text-on-primary font-headline-card text-lg shadow-[0_0_20px_rgba(78,222,163,0.3)] hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2">
+                        <Play className="w-6 h-6 fill-current" />
+                        Resume
+                    </button>
+                    <button 
+                        onClick={onReset} 
+                        className="py-4 rounded-xl bg-surface-variant text-muted-foreground border border-white/10 font-headline-card text-lg hover:text-foreground transition-all flex items-center justify-center gap-2">
+                        <RotateCcw className="w-5 h-5" />
+                        Reset
+                    </button>
+                    <button
+                        onClick={onFinish}
+                        disabled={!canFinish}
+                        className={`col-span-2 py-4 rounded-xl font-headline-card text-lg transition-all flex items-center justify-center gap-2 ${
+                        canFinish
+                            ? 'bg-surface-variant text-primary border border-primary/30 hover:bg-primary/10 cursor-pointer'
+                            : 'bg-surface-variant/50 text-muted-foreground border border-white/5 cursor-not-allowed'
+                        }`}>
+                        <CheckCircle2 className="w-6 h-6" />
+                        Finish
+                    </button>
+                </div>
+            )}
+
+            <p className="text-center mt-2 text-muted-foreground font-body-main">
+                Today's goal: <span className="text-foreground font-bold">{targetMinutes}:00 mins</span>
+                {!canFinish && <span className="block text-sm opacity-70 mt-1">Min. required: {minimumMinutes}:00 mins</span>}
             </p>
-          )}
-          {timerProgress >= 100 && timerState === 'running' && (
-            <p className="text-sm text-center text-[#00FFA3] font-medium animate-pulse">
-              🎉 Target reached! You can finish the timer and upload your proof.
-            </p>
-          )}
-
-          {finishError && (
-            <div className="flex items-center gap-2 p-4 text-sm text-orange-300 border rounded-xl bg-orange-500/10 border-orange-500/20 max-w-sm text-center">
-              <AlertTriangle className="w-4 h-4 shrink-0" /> {finishError}
-            </div>
-          )}
+            
+            {finishError && (
+                <div className="mt-4 flex items-center gap-2 p-4 text-sm text-error bg-error/10 border border-error/20 rounded-xl justify-center">
+                    <AlertTriangle className="w-4 h-4 shrink-0" /> {finishError}
+                </div>
+            )}
         </div>
-
-        {/* Progress towards minimum requirement */}
-        {!canFinish && timerState !== 'idle' && (
-          <div className="mb-8 w-full max-w-xs">
-            <div className="flex justify-between text-xs text-white/40 mb-1.5">
-              <span>Goal: Minimum {minimumMinutes} min</span>
-              <span>{Math.round((elapsedMinutes / minimumMinutes) * 100)}%</span>
-            </div>
-            <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden border border-white/5">
-              <div
-                className="h-full bg-orange-400 rounded-full transition-all duration-500"
-                style={{ width: `${Math.min((elapsedMinutes / minimumMinutes) * 100, 100)}%` }}
-              />
-            </div>
-          </div>
-        )}
-
-        {/* Timer Action Controls */}
-        <div className="flex gap-4 flex-wrap justify-center">
-          {timerState === 'idle' && (
-            <button 
-              onClick={onStart} 
-              className="flex items-center gap-2 px-10 py-4 text-lg font-bold text-black uppercase bg-[#00FFA3] rounded-full hover:bg-[#00FFA3]/90 transition-all hover:scale-105 active:scale-95 shadow-[0_0_20px_rgba(0,255,163,0.3)]"
-            >
-              <Play className="w-5 h-5 fill-current" /> Start Timer
-            </button>
-          )}
-          
-          {timerState === 'running' && (
-            <>
-              <button 
-                onClick={onPause} 
-                className="flex items-center gap-2 px-6 py-3 font-semibold text-white transition-all border border-white/20 rounded-full hover:bg-white/10 hover:border-white/40"
-              >
-                <Pause className="w-5 h-5" /> Pause
-              </button>
-              <button
-                onClick={onFinish}
-                disabled={!canFinish}
-                title={!canFinish ? `Minimal ${minimumMinutes} menit diperlukan` : ''}
-                className={`flex items-center gap-2 px-8 py-3 font-bold text-black uppercase rounded-full transition-all shadow-[0_0_15px_rgba(0,255,163,0.3)] ${
-                  canFinish
-                    ? 'bg-[#00FFA3] hover:bg-[#00FFA3]/90 cursor-pointer hover:scale-105'
-                    : 'bg-[#00FFA3]/30 text-black/40 cursor-not-allowed grayscale-[0.5]'
-                }`}
-              >
-                <CheckCircle2 className="w-5 h-5" /> Finish & Upload
-              </button>
-            </>
-          )}
-
-          {timerState === 'paused' && (
-            <>
-              <button 
-                onClick={onResume} 
-                className="flex items-center gap-2 px-8 py-3 font-bold text-black uppercase bg-[#00FFA3] rounded-full hover:bg-[#00FFA3]/90 transition-all hover:scale-105"
-              >
-                <Play className="w-5 h-5 fill-current" /> Resume
-              </button>
-              <button 
-                onClick={onReset} 
-                className="flex items-center gap-2 px-6 py-3 font-semibold text-white/50 transition-all border border-white/10 rounded-full hover:text-white hover:border-white/30"
-              >
-                <RotateCcw className="w-4 h-4" /> Reset
-              </button>
-              <button
-                onClick={onFinish}
-                disabled={!canFinish}
-                className={`flex items-center gap-2 px-6 py-3 font-semibold rounded-full transition-all ${
-                  canFinish
-                    ? 'text-white border border-white/20 hover:bg-white/10 cursor-pointer'
-                    : 'text-white/20 border border-white/5 cursor-not-allowed'
-                }`}
-              >
-                <CheckCircle2 className="w-5 h-5" /> Finish
-              </button>
-            </>
-          )}
-        </div>
-      </div>
     </div>
   );
 };

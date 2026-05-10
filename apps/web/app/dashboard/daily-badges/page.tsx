@@ -5,6 +5,8 @@ import { useWallet } from '@solana/wallet-adapter-react';
 import { ArrowLeft, Loader2, Medal } from 'lucide-react';
 import Link from 'next/link';
 
+import PageShellWidth from '@/components/PageShellWidth';
+
 export default function DailyBadgesPage() {
   const { connected, publicKey } = useWallet();
   const [isMounted, setIsMounted] = useState(false);
@@ -32,9 +34,12 @@ export default function DailyBadgesPage() {
 
   if (!connected) {
     return (
+      <>
+        <PageShellWidth value="80rem" />
       <div className="container px-6 py-12 mx-auto max-w-7xl flex justify-center">
         <p className="text-white/60">Please connect your wallet to view your daily badges.</p>
       </div>
+      </>
     );
   }
 

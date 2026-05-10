@@ -5,6 +5,7 @@ import { useWallet } from '@solana/wallet-adapter-react';
 import { ArrowLeft, History, Loader2, Target, XCircle, CheckCircle2, AlertTriangle, Skull, TrendingDown } from 'lucide-react';
 import Link from 'next/link';
 
+import PageShellWidth from '@/components/PageShellWidth';
 import { useCommitments, CommitmentData } from '@/hooks/useCommitments';
 
 function historyStatusBadge(status: string) {
@@ -39,14 +40,17 @@ export default function HistoryPage() {
 
   if (!connected) {
     return (
+      <>
+        <PageShellWidth value="64rem" />
       <div className="flex flex-col items-center justify-center min-h-[80vh] px-4 text-center">
         <p className="text-white/60 mb-4">Please connect your wallet to view your history.</p>
       </div>
+      </>
     );
   }
 
   return (
-    <div className="container px-6 py-8 mx-auto max-w-5xl">
+    <div className="w-full">
       {/* Back Button */}
       <Link href="/dashboard" className="inline-flex items-center gap-2 mb-8 text-sm text-white/50 hover:text-[#00FFA3] transition-colors">
         <ArrowLeft className="w-4 h-4" /> Back to Dashboard

@@ -25,14 +25,14 @@ export function ChampionMedalCard({ medal }: ChampionMedalCardProps) {
   const subtitle = subtitleMatch ? subtitleMatch[1] : medal.name;
 
   return (
-    <div className="relative flex flex-col items-center group">
+    <div className="group relative flex flex-col items-center rounded-xl border border-white/10 bg-white/5 p-3 transition-colors hover:border-secondary/25"> {/* updated, flatten the champion tile so it blends into the minimal dashboard surface */}
       {/* Trophy badge overlay */}
-      <div className="absolute -top-2 -right-2 z-10 flex items-center justify-center w-6 h-6 rounded-full bg-yellow-400 shadow-[0_0_10px_rgba(250,204,21,0.8)] border border-yellow-200">
-        <Trophy className="w-3 h-3 text-yellow-900" />
+      <div className="absolute -right-2 -top-2 z-10 flex h-6 w-6 items-center justify-center rounded-full border border-secondary/30 bg-secondary"> {/* updated, remove the bright trophy glow for a cleaner badge marker */}
+        <Trophy className="h-3 w-3 text-[#472a00]" /> {/* updated, increase badge contrast against the secondary pill */}
       </div>
 
       {/* Medal image with gold glow */}
-      <div className="w-20 h-20 p-1 mb-2 rounded-xl border-2 border-yellow-400/70 shadow-[0_0_20px_rgba(250,204,21,0.35)] transition-all duration-300 group-hover:scale-110 group-hover:shadow-[0_0_30px_rgba(250,204,21,0.6)] group-hover:border-yellow-300 bg-black/60">
+      <div className="mb-3 flex h-20 w-20 items-center justify-center rounded-xl border border-secondary/30 bg-card p-1 transition-all duration-300 group-hover:scale-[1.02]"> {/* updated, keep the medal frame crisp and minimal without halo effects */}
         <img
           src={medal.image_url}
           alt={medal.name}
@@ -42,12 +42,12 @@ export function ChampionMedalCard({ medal }: ChampionMedalCardProps) {
 
       {/* Medal name */}
       <p
-        className="text-xs text-center text-yellow-300/90 font-semibold line-clamp-2 leading-tight"
+        className="line-clamp-2 text-center text-xs font-semibold leading-5 text-foreground"
         title={medal.name}
       >
         {subtitle}
       </p>
-      <span className="mt-0.5 text-[10px] text-yellow-500/70 font-medium tracking-wide uppercase">
+      <span className="mt-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-secondary/80"> {/* updated, match the Stitch label treatment on the medal footer */}
         Champion
       </span>
     </div>

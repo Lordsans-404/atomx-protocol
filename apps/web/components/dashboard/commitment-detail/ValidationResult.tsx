@@ -49,42 +49,44 @@ export const ValidationResult: React.FC<ValidationResultProps> = ({
   const isLastDay = daysCompleted >= daysTotal && daysTotal > 0;
 
   return (
-    <div className="p-8 border bg-white/5 backdrop-blur-xl border-white/10 rounded-3xl shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
-      <div className="flex items-center gap-3 mb-8">
-        <div className={`p-2 rounded-lg ${aiResult.isValid ? 'bg-[#00FFA3]/10' : 'bg-red-500/10'}`}>
+    <div className="w-full flex flex-col items-center justify-center">
+      <div className="flex items-center gap-3 mb-8 w-full max-w-lg">
+        <div className={`p-2 rounded-lg ${aiResult.isValid ? 'bg-primary/10' : 'bg-error/10'}`}>
           {aiResult.isValid ? (
-            <CheckCircle2 className="w-7 h-7 text-[#00FFA3]" />
+            <CheckCircle2 className="w-7 h-7 text-primary" />
           ) : (
-            <AlertTriangle className="w-7 h-7 text-red-400" />
+            <AlertTriangle className="w-7 h-7 text-error" />
           )}
         </div>
-        <h2 className="text-2xl font-bold text-white font-playfair">AI Validation Result</h2>
+        <h2 className="text-2xl font-bold text-foreground font-headline-card">AI Validation Result</h2>
       </div>
 
       {/* Main Analysis Card */}
-      <div className={`p-6 rounded-2xl border backdrop-blur-md transition-all duration-500 ${
-        aiResult.isValid ? 'bg-[#00FFA3]/5 border-[#00FFA3]/20 shadow-[0_0_40px_rgba(0,255,163,0.05)]' : 'bg-red-500/5 border-red-500/20 shadow-[0_0_40px_rgba(239,68,68,0.05)]'
+      <div className={`w-full max-w-lg p-6 rounded-2xl border backdrop-blur-md transition-all duration-500 ${
+        aiResult.isValid 
+          ? 'bg-white/5 border-white/10 hover:border-primary/30 hover:bg-primary/5 hover:shadow-[0_0_40px_rgba(78,222,163,0.1)]' 
+          : 'bg-white/5 border-white/10 hover:border-error/30 hover:bg-error/5 hover:shadow-[0_0_40px_rgba(255,180,171,0.1)]'
       }`}>
         
         {/* Confidence Score Visualizer */}
         <div className="mb-8 p-4 bg-black/30 rounded-xl border border-white/5">
           <div className="flex items-center justify-between mb-3">
             <div>
-              <p className="text-sm font-semibold text-white">AI Confidence</p>
-              <p className="text-xs text-white/40 mt-0.5">Threshold: 30/100</p>
+              <p className="text-sm font-semibold text-foreground font-body-main">AI Confidence</p>
+              <p className="text-xs text-muted-foreground mt-0.5">Threshold: 30/100</p>
             </div>
             <div className="text-right">
-              <p className={`text-3xl font-black ${(aiResult.confidenceScore ?? 0) >= 60 ? 'text-[#00FFA3]' : (aiResult.confidenceScore ?? 0) >= 30 ? 'text-yellow-400' : 'text-red-400'}`}>
-                {aiResult.confidenceScore ?? 0}<span className="text-base font-normal text-white/30">/100</span>
+              <p className={`text-3xl font-black font-display-timer ${(aiResult.confidenceScore ?? 0) >= 60 ? 'text-primary' : (aiResult.confidenceScore ?? 0) >= 30 ? 'text-yellow-400' : 'text-error'}`}>
+                {aiResult.confidenceScore ?? 0}<span className="text-base font-normal text-muted-foreground">/100</span>
               </p>
             </div>
           </div>
           <div className="w-full h-3 overflow-hidden bg-white/10 rounded-full p-[1px]">
             <div 
               className={`h-full rounded-full transition-all duration-1000 ease-out ${
-                (aiResult.confidenceScore ?? 0) >= 60 ? 'bg-gradient-to-r from-[#00FFA3] to-emerald-400 shadow-[0_0_15px_rgba(0,255,163,0.4)]' :
+                (aiResult.confidenceScore ?? 0) >= 60 ? 'bg-gradient-to-r from-primary to-emerald-400 shadow-[0_0_15px_rgba(78,222,163,0.4)]' :
                 (aiResult.confidenceScore ?? 0) >= 30 ? 'bg-gradient-to-r from-yellow-500 to-amber-400 shadow-[0_0_15px_rgba(241,196,15,0.3)]' :
-                'bg-gradient-to-r from-red-600 to-red-400 shadow-[0_0_15px_rgba(239,68,68,0.3)]'
+                'bg-gradient-to-r from-error to-red-400 shadow-[0_0_15px_rgba(255,180,171,0.3)]'
               }`}
               style={{ width: `${aiResult.confidenceScore ?? 0}%` }}
             />
@@ -93,7 +95,7 @@ export const ValidationResult: React.FC<ValidationResultProps> = ({
 
         {/* Detailed Metrics Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
-          <DetailItem label="Status" value={aiResult.isValid ? '✅ VALID' : '❌ REJECTED'} color={aiResult.isValid ? 'text-[#00FFA3]' : 'text-red-400'} />
+          <DetailItem label="Status" value={aiResult.isValid ? '✅ VALID' : '❌ REJECTED'} color={aiResult.isValid ? 'text-primary' : 'text-error'} />
           <DetailItem label="Minutes Detected" value={`${aiResult.minutes} min`} />
           <DetailItem label="Identified Activity" value={aiResult.activity} />
           <DetailItem label="Timer Duration" value={`${elapsedMinutes} min (${formatTime(elapsedSeconds)})`} />
@@ -103,45 +105,45 @@ export const ValidationResult: React.FC<ValidationResultProps> = ({
         <div className="space-y-6 pt-6 border-t border-white/10">
           {aiResult.relevance && (
             <div>
-              <p className="text-xs font-bold uppercase tracking-widest text-white/40 mb-2">Relevance to Commitment</p>
-              <p className="text-sm leading-relaxed text-white/80 italic">"{aiResult.relevance}"</p>
+              <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2 font-label-caps">Relevance to Commitment</p>
+              <p className="text-sm leading-relaxed text-foreground/80 italic font-body-main">"{aiResult.relevance}"</p>
             </div>
           )}
           <div>
-            <p className="text-xs font-bold uppercase tracking-widest text-white/40 mb-2">AI Reasoning</p>
-            <p className="text-sm leading-relaxed text-white/70">{aiResult.reason}</p>
+            <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2 font-label-caps">AI Reasoning</p>
+            <p className="text-sm leading-relaxed text-foreground/70 font-body-main">{aiResult.reason}</p>
           </div>
         </div>
       </div>
 
       {/* Error Messages */}
       {submitError && (
-        <div className="flex items-center gap-3 p-4 mt-8 text-sm text-red-300 border rounded-xl bg-red-500/10 border-red-500/20 animate-bounce">
-          <AlertTriangle className="w-5 h-5 shrink-0 text-red-400" /> {submitError}
+        <div className="w-full max-w-lg flex items-center gap-3 p-4 mt-8 text-sm text-error bg-error/10 border border-error/20 rounded-xl animate-bounce">
+          <AlertTriangle className="w-5 h-5 shrink-0" /> {submitError}
         </div>
       )}
 
       {/* Success View */}
       {submitSuccess ? (
-        <div className="flex flex-col items-center p-8 mt-8 text-center border rounded-3xl bg-[#00FFA3]/5 border-[#00FFA3]/20 shadow-[0_0_50px_rgba(0,255,163,0.1)] animate-in zoom-in-95 duration-500">
-          <div className="p-4 bg-[#00FFA3]/20 rounded-full mb-4 shadow-[0_0_30px_rgba(0,255,163,0.3)]">
-            <CheckCircle2 className="w-16 h-16 text-[#00FFA3]" />
+        <div className="w-full max-w-lg flex flex-col items-center p-8 mt-8 text-center border rounded-3xl bg-white/5 border-white/10 transition-all duration-500 hover:border-primary/30 hover:bg-primary/5 hover:shadow-[0_0_40px_rgba(78,222,163,0.1)] animate-in zoom-in-95">
+          <div className="p-4 bg-primary/20 rounded-full mb-4 shadow-[0_0_30px_rgba(78,222,163,0.3)]">
+            <CheckCircle2 className="w-16 h-16 text-primary" />
           </div>
-          <h3 className="text-2xl font-bold text-white mb-2 font-playfair">Proof Submitted On-Chain!</h3>
-          <p className="max-w-xs text-sm text-white/50 leading-relaxed mb-6">
+          <h3 className="text-2xl font-bold text-foreground mb-2 font-headline-card">Proof Submitted On-Chain!</h3>
+          <p className="max-w-xs text-sm text-muted-foreground leading-relaxed mb-6 font-body-main">
             Congratulations! Your daily progress has been permanently recorded on the Solana blockchain.
           </p>
 
-          {/* Champion medal teaser — shown only when this is the final day */}
+          {/* Champion medal teaser */}
           {isLastDay && (
             <div className="w-full max-w-xs mb-8 p-4 rounded-2xl bg-yellow-500/10 border border-yellow-400/30 shadow-[0_0_30px_rgba(250,204,21,0.1)] animate-in fade-in duration-700">
               <div className="flex items-center gap-3 mb-3">
                 <div className="flex items-center justify-center w-8 h-8 rounded-full bg-yellow-400/20">
                   <Trophy className="w-4 h-4 text-yellow-400" />
                 </div>
-                <p className="text-sm font-bold text-yellow-300">Champion Medal Incoming!</p>
+                <p className="text-sm font-bold text-yellow-300 font-body-main">Champion Medal Incoming!</p>
               </div>
-              <p className="text-xs text-yellow-400/70 leading-relaxed mb-3">
+              <p className="text-xs text-yellow-400/70 leading-relaxed mb-3 font-body-main">
                 You've completed all {daysTotal} days. A unique Champion Medal cNFT is being minted to your wallet right now.
               </p>
               <div className="flex justify-center">
@@ -158,30 +160,30 @@ export const ValidationResult: React.FC<ValidationResultProps> = ({
 
           <Link 
             href="/dashboard" 
-            className="px-10 py-3 font-bold text-black bg-[#00FFA3] rounded-full hover:bg-[#00FFA3]/90 transition-all hover:scale-105 shadow-[0_0_20px_rgba(0,255,163,0.3)]"
+            className="px-10 py-4 font-headline-card text-lg text-on-primary bg-primary rounded-xl hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_0_20px_rgba(78,222,163,0.3)]"
           >
             {isLastDay ? '🎉 Claim Your USDT Rewards!' : 'Return to Dashboard'}
           </Link>
         </div>
       ) : (
         /* Action Buttons */
-        <div className="flex flex-col sm:flex-row gap-4 mt-10">
+        <div className="flex flex-col sm:flex-row gap-4 mt-10 w-full max-w-lg">
           <button
             onClick={onReupload}
-            className="px-8 py-3 font-semibold text-white/60 transition-all border border-white/10 rounded-full hover:text-white hover:bg-white/5 hover:border-white/20 order-2 sm:order-1"
+            className="px-8 py-4 font-headline-card text-lg text-muted-foreground transition-all border border-white/10 rounded-xl hover:text-foreground hover:bg-white/5 order-2 sm:order-1 flex-1"
           >
-            ← Re-upload Proof
+            ← Re-upload
           </button>
           {aiResult.isValid && (
             <button
               onClick={onSubmit}
               disabled={isSubmitting}
-              className="flex items-center justify-center gap-2 px-10 py-3 font-bold text-black uppercase bg-[#00FFA3] rounded-full hover:bg-[#00FFA3]/90 transition-all hover:scale-105 shadow-[0_0_30px_rgba(0,255,163,0.3)] order-1 sm:order-2 flex-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+              className="flex items-center justify-center gap-2 px-8 py-4 font-headline-card text-lg text-on-primary bg-primary rounded-xl hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_0_20px_rgba(78,222,163,0.3)] order-1 sm:order-2 flex-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
             >
               {isSubmitting ? (
                 <><Loader2 className="w-5 h-5 animate-spin" /> Finalizing...</>
               ) : (
-                <><Flame className="w-5 h-5 fill-current" /> Submit to Blockchain</>
+                <><Flame className="w-5 h-5" /> Submit to Chain</>
               )}
             </button>
           )}
@@ -194,9 +196,9 @@ export const ValidationResult: React.FC<ValidationResultProps> = ({
 /**
  * Helper component for structured detail display
  */
-const DetailItem = ({ label, value, color = 'text-white' }: { label: string; value: string; color?: string }) => (
+const DetailItem = ({ label, value, color = 'text-foreground' }: { label: string; value: string; color?: string }) => (
   <div className="space-y-1">
-    <p className="text-xs font-bold uppercase tracking-widest text-white/30">{label}</p>
-    <p className={`text-lg font-bold truncate ${color}`}>{value}</p>
+    <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground font-label-caps">{label}</p>
+    <p className={`text-lg font-bold truncate font-body-main ${color}`}>{value}</p>
   </div>
 );
