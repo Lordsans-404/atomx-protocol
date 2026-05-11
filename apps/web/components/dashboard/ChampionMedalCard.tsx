@@ -36,6 +36,7 @@ export function ChampionMedalCard({ medal }: ChampionMedalCardProps) {
         <img
           src={medal.image_url}
           alt={medal.name}
+          referrerPolicy="no-referrer"
           className="w-full h-full object-cover rounded-lg"
         />
       </div>

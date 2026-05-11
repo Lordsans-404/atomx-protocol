@@ -84,6 +84,7 @@ export default function DailyBadgesPage() {
                   <img 
                     src={medal.image_url} 
                     alt={medal.name} 
+                    referrerPolicy="no-referrer"
                     className="w-full h-full object-cover rounded-xl bg-black/60 relative z-10" 
                   />
                 </div>
