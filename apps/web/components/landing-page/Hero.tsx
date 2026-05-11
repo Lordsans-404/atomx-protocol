@@ -1,6 +1,14 @@
 'use client';
 
+import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import { useEffect, useRef, useCallback } from 'react';
+
+// Import the WalletMultiButton dynamically to avoid SSR hydration errors
+const WalletMultiButton = dynamic(
+  () => import('@solana/wallet-adapter-react-ui').then((mod) => mod.WalletMultiButton),
+  { ssr: false }
+);
 
 const ORBITS = [
   { rx: 90, ry: 90, tiltX: Math.PI * 0.15, tiltY: 0, tiltZ: 0, speed: 0.008, angle: 0 },
@@ -145,8 +153,8 @@ function AtomBackground() {
 
       // Ambient glow
       const ambient = ctx.createRadialGradient(cx, cy, 0, cx, cy, glowR + pulseExtra);
-      ambient.addColorStop(0, `rgba(0,255,163,${(glowAlpha + pulseAlpha).toFixed(3)})`);
-      ambient.addColorStop(1, 'rgba(0,255,163,0)');
+      ambient.addColorStop(0, `rgba(78,222,163,${(glowAlpha + pulseAlpha).toFixed(3)})`);
+      ambient.addColorStop(1, 'rgba(78,222,163,0)');
       ctx.beginPath();
       ctx.arc(cx, cy, glowR + pulseExtra, 0, Math.PI * 2);
       ctx.fillStyle = ambient;
@@ -155,8 +163,8 @@ function AtomBackground() {
       // Pulse ring
       if (breath.pulseActive) {
         const pulse = ctx.createRadialGradient(cx, cy, r, cx, cy, r + pulseExtra + 4 * scale);
-        pulse.addColorStop(0, `rgba(0,255,163,${(pulseAlpha * 0.5).toFixed(3)})`);
-        pulse.addColorStop(1, 'rgba(0,255,163,0)');
+        pulse.addColorStop(0, `rgba(78,222,163,${(pulseAlpha * 0.5).toFixed(3)})`);
+        pulse.addColorStop(1, 'rgba(78,222,163,0)');
         ctx.beginPath();
         ctx.arc(cx, cy, r + pulseExtra + 4 * scale, 0, Math.PI * 2);
         ctx.fillStyle = pulse;
@@ -174,7 +182,7 @@ function AtomBackground() {
         if (p.life <= 0) { particles.splice(i, 1); continue; }
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r * p.life, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(0,255,163,${(p.life * 0.6).toFixed(2)})`;
+        ctx.fillStyle = `rgba(78,222,163,${(p.life * 0.6).toFixed(2)})`;
         ctx.fill();
       }
 
@@ -187,7 +195,7 @@ function AtomBackground() {
           const p = project(Math.cos(a) * o.rx * scale, Math.sin(a) * o.ry * scale, 0, tX, tY, tZ);
           i === 0 ? ctx.moveTo(cx + p.x, cy + p.y) : ctx.lineTo(cx + p.x, cy + p.y);
         }
-        ctx.strokeStyle = `rgba(0,255,163,${(0.18 + inf * 0.15).toFixed(3)})`;
+        ctx.strokeStyle = `rgba(78,222,163,${(0.18 + inf * 0.15).toFixed(3)})`;
         ctx.lineWidth = 1.2 + inf * 0.6;
         ctx.stroke();
       });
@@ -203,7 +211,7 @@ function AtomBackground() {
       // Nucleus
       ctx.beginPath();
       ctx.arc(cx, cy, r, 0, Math.PI * 2);
-      ctx.fillStyle = '#00FFA3';
+      ctx.fillStyle = '#4edea3';
       ctx.fill();
       const shine = ctx.createRadialGradient(cx - r * 0.3, cy - r * 0.3, 0, cx, cy, r);
       shine.addColorStop(0, 'rgba(255,255,255,0.45)');
@@ -217,7 +225,7 @@ function AtomBackground() {
       if (inf > 0.02) {
         ctx.beginPath();
         ctx.arc(cx, cy, r + 6 * scale, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * inf);
-        ctx.strokeStyle = `rgba(0,255,163,${(inf * 0.5).toFixed(2)})`;
+        ctx.strokeStyle = `rgba(78,222,163,${(inf * 0.5).toFixed(2)})`;
         ctx.lineWidth = 2 * scale;
         ctx.stroke();
       }
@@ -228,15 +236,15 @@ function AtomBackground() {
         const bright = Math.min(1, 0.55 + (e.z / (90 * scale)) * 0.45);
         const glowSize = (14 + inf * 4) * scale;
         const g = ctx.createRadialGradient(e.x, e.y, 0, e.x, e.y, glowSize);
-        g.addColorStop(0, `rgba(0,255,163,${(bright * 0.5).toFixed(2)})`);
-        g.addColorStop(1, 'rgba(0,255,163,0)');
+        g.addColorStop(0, `rgba(78,222,163,${(bright * 0.5).toFixed(2)})`);
+        g.addColorStop(1, 'rgba(78,222,163,0)');
         ctx.beginPath();
         ctx.arc(e.x, e.y, glowSize, 0, Math.PI * 2);
         ctx.fillStyle = g;
         ctx.fill();
         ctx.beginPath();
         ctx.arc(e.x, e.y, (5 + inf) * scale, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(0,255,163,${bright.toFixed(2)})`;
+        ctx.fillStyle = `rgba(78,222,163,${bright.toFixed(2)})`;
         ctx.fill();
       });
 
@@ -264,10 +272,10 @@ function AtomBackground() {
 
 export default function Hero() {
   return (
-    <section className="relative flex flex-col items-center justify-center min-h-screen px-4 pt-46 pb-20 overflow-hidden w-full">
+    <section className="relative flex flex-col items-center justify-center min-h-screen px-4 sm:px-6 lg:px-8 pt-46 pb-20 overflow-hidden w-full">
       {/* Dark background */}
       <div className="absolute inset-0 z-[-1] bg-[#09090b]">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-[#00FFA3]/5 via-[#09090b] to-[#09090b]"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary/5 via-[#09090b] to-[#09090b]"></div>
       </div>
 
       {/* Canvas atom background — behind all text */}
@@ -276,10 +284,10 @@ export default function Hero() {
       {/* Foreground content */}
       <div className="relative z-10 flex flex-col items-center text-center max-w-3xl mx-auto space-y-8 mb-20">
         <div className="space-y-2">
-          <h1 className="text-[2.5rem] sm:text-6xl md:text-7xl font-extrabold text-white tracking-tight uppercase leading-[1.1]">
+          <h1 className="text-[2.5rem] sm:text-6xl md:text-7xl font-extrabold text-white tracking-tight uppercase leading-[1.1] font-playfair">
             Stake Your <br /> Crypto.
           </h1>
-          <h2 className="text-[2.5rem] sm:text-6xl md:text-7xl font-extrabold text-[#00FFA3] tracking-tight uppercase leading-[1.1] drop-shadow-[0_0_20px_rgba(0,255,163,0.3)]">
+          <h2 className="text-[2.5rem] sm:text-6xl md:text-7xl font-extrabold text-primary tracking-tight uppercase leading-[1.1] drop-shadow-[0_0_20px_rgba(78,222,163,0.3)] font-playfair">
             Build Atomic <br /> Habits.
           </h2>
         </div>
@@ -289,23 +297,23 @@ export default function Hero() {
         </p>
 
         <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
-          <button className="w-full sm:w-auto px-8 py-4 text-sm sm:text-base font-bold tracking-wider text-black uppercase transition-all bg-[#00FFA3] rounded-xl hover:bg-[#00FFA3]/90 hover:scale-[1.02] active:scale-[0.98] shadow-[0_0_20px_rgba(0,255,163,0.2)]">
-            Connect Wallet
-          </button>
-          <button className="w-full sm:w-auto px-8 py-4 text-sm sm:text-base font-bold tracking-wider text-[#00FFA3] uppercase transition-all bg-[#111111] border border-white/5 rounded-xl hover:bg-[#1a1a1a] hover:border-white/10 hover:scale-[1.02] active:scale-[0.98]">
+          <Link 
+            href="#how"
+            className="w-full sm:w-auto px-8 py-4 text-sm sm:text-base font-bold tracking-wider text-primary uppercase transition-all bg-[#111111] border border-white/5 rounded-xl hover:bg-[#1a1a1a] hover:border-white/10 hover:scale-[1.02] active:scale-[0.98] text-center"
+          >
             See How It Works
-          </button>
+          </Link>
         </div>
       </div>
 
       {/* Stats Section */}
-      <div className="relative z-10 w-full max-w-4xl mx-auto border-t border-white/10 pt-10 px-4">
-        <div className="flex flex-row justify-around items-center gap-4">
+      <div className="relative z-10 w-full max-w-7xl mx-auto border-t border-white/10 pt-10 px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-row justify-around items-center gap-4 max-w-4xl mx-auto">
           <div className="text-center">
-            <div className="text-2xl sm:text-4xl font-bold text-[#00FFA3] mb-1 tracking-tight drop-shadow-[0_0_10px_rgba(0,255,163,0.3)]">
+            <div className="text-2xl sm:text-4xl font-bold text-primary mb-1 tracking-tight drop-shadow-[0_0_10px_rgba(78,222,163,0.3)] font-playfair">
               $2.4M
             </div>
-            <div className="text-[10px] sm:text-xs font-semibold text-zinc-400 uppercase tracking-widest">
+            <div className="text-[10px] sm:text-xs font-semibold text-zinc-400 uppercase tracking-widest font-mono">
               TVL Staked
             </div>
           </div>
@@ -313,10 +321,10 @@ export default function Hero() {
           <div className="h-10 w-px bg-white/10"></div>
 
           <div className="text-center">
-            <div className="text-2xl sm:text-4xl font-bold text-[#00FFA3] mb-1 tracking-tight drop-shadow-[0_0_10px_rgba(0,255,163,0.3)]">
+            <div className="text-2xl sm:text-4xl font-bold text-primary mb-1 tracking-tight drop-shadow-[0_0_10px_rgba(78,222,163,0.3)] font-playfair">
               94%
             </div>
-            <div className="text-[10px] sm:text-xs font-semibold text-zinc-400 uppercase tracking-widest">
+            <div className="text-[10px] sm:text-xs font-semibold text-zinc-400 uppercase tracking-widest font-mono">
               Success Rate
             </div>
           </div>
@@ -324,10 +332,10 @@ export default function Hero() {
           <div className="h-10 w-px bg-white/10"></div>
 
           <div className="text-center">
-            <div className="text-2xl sm:text-4xl font-bold text-[#00FFA3] mb-1 tracking-tight drop-shadow-[0_0_10px_rgba(0,255,163,0.3)]">
+            <div className="text-2xl sm:text-4xl font-bold text-primary mb-1 tracking-tight drop-shadow-[0_0_10px_rgba(78,222,163,0.3)] font-playfair">
               12k+
             </div>
-            <div className="text-[10px] sm:text-xs font-semibold text-zinc-400 uppercase tracking-widest">
+            <div className="text-[10px] sm:text-xs font-semibold text-zinc-400 uppercase tracking-widest font-mono">
               Active Habits
             </div>
           </div>

@@ -1,0 +1,1868 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Atomx Protocol — Stake Your Habits. Change the World.</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;800&family=Geist:wght@300;400;500&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    /* === DESIGN.MD TOKENS — STRICT COMPLIANCE === */
+    --background:               #070913;
+    --surface:                  #0e1511;
+    --surface-dim:              #0e1511;
+    --surface-bright:           #343b36;
+    --surface-container-lowest: #09100c;
+    --surface-container-low:    #161d19;
+    --surface-container:        #1a211d;
+    --surface-container-high:   #242c27;
+    --surface-container-highest:#2f3632;
+
+    --on-surface:               #dde4dd;
+    --on-surface-variant:       #bbcabf;
+    --outline:                  #86948a;
+    --outline-variant:          #3c4a42;
+
+    --primary:                  #4edea3;
+    --on-primary:               #003824;
+    --primary-container:        #10b981;
+    --on-primary-container:     #00422b;
+    --inverse-primary:          #006c49;
+
+    --secondary:                #ffb95f;
+    --on-secondary:             #472a00;
+    --secondary-container:      #ee9800;
+    --on-secondary-container:   #5b3800;
+
+    --tertiary:                 #ffb3af;
+    --on-tertiary:              #650911;
+    --tertiary-container:       #fc7c78;
+    --on-tertiary-container:    #711419;
+
+    --error:                    #ffb4ab;
+    --on-error:                 #690005;
+    --error-container:          #93000a;
+    --on-error-container:       #ffdad6;
+
+    --primary-fixed:            #6ffbbe;
+    --primary-fixed-dim:        #4edea3;
+    --on-primary-fixed:         #002113;
+    --on-primary-fixed-variant: #005236;
+
+    --secondary-fixed:          #ffddb8;
+    --secondary-fixed-dim:      #ffb95f;
+    --on-secondary-fixed:       #2a1700;
+    --on-secondary-fixed-variant:#653e00;
+
+    --tertiary-fixed:           #ffdad7;
+    --tertiary-fixed-dim:       #ffb3af;
+    --on-tertiary-fixed:        #410005;
+    --on-tertiary-fixed-variant:#842225;
+
+    --card:                     #0d111d;
+    --foreground:               #ffffff;
+    --muted-foreground:         #94a3b8;
+    --border:                   rgba(255,255,255,0.05);
+
+    --success-emerald:          #34d399;
+    --streak-orange:            #f97316;
+    --active-glow:              rgba(16,185,129,0.20);
+
+    /* === FONTS (design.md) === */
+    --font-display:     'Space Grotesk', sans-serif;
+    --font-body:        'Geist', sans-serif;
+    --font-mono:        'Geist Mono', monospace;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--background);
+    color: var(--on-surface);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* === GLOBAL NOISE OVERLAY === */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.4;
+  }
+
+  /* === NAV === */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 4rem;
+    background: rgba(7,9,19,0.88);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-logo {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.4rem;
+    letter-spacing: -0.02em;
+    color: var(--on-surface);
+    text-decoration: none;
+  }
+
+  .nav-logo span { color: var(--secondary); }
+
+  .nav-links {
+    display: flex;
+    gap: 2.5rem;
+    list-style: none;
+    align-items: center;
+  }
+
+  .nav-links a {
+    color: var(--muted-foreground);
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 400;
+    letter-spacing: 0.01em;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--on-surface); }
+
+  .btn-nav {
+    background: var(--primary);
+    color: var(--on-primary);
+    border: none;
+    padding: 0.5rem 1.25rem;
+    border-radius: 6px;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 0.875rem;
+    cursor: pointer;
+    letter-spacing: 0.02em;
+    transition: background 0.2s, transform 0.15s;
+  }
+
+  .btn-nav:hover { background: var(--primary-fixed); transform: translateY(-1px); }
+
+  /* === HERO === */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 8rem 2rem 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-grid-bg {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(78,222,163,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(78,222,163,0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse 80% 60% at 50% 50%, black 40%, transparent 100%);
+  }
+
+  .hero-glow {
+    position: absolute;
+    width: 700px;
+    height: 700px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(78,222,163,0.08) 0%, transparent 70%);
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+
+  .hero-glow-teal {
+    position: absolute;
+    width: 500px;
+    height: 500px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,185,95,0.06) 0%, transparent 70%);
+    top: 30%; left: 70%;
+    pointer-events: none;
+  }
+
+  .tag-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(78,222,163,0.08);
+    border: 1px solid rgba(78,222,163,0.25);
+    color: var(--primary);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    padding: 0.35rem 0.9rem;
+    border-radius: 100px;
+    letter-spacing: 0.08em;
+    margin-bottom: 2rem;
+    animation: fadeInUp 0.6s ease both;
+  }
+
+  .tag-chip::before {
+    content: '';
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--primary);
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.8); }
+  }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .hero h1 {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(3rem, 7vw, 5.5rem);
+    line-height: 1.0;
+    letter-spacing: -0.04em;
+    margin-bottom: 1.5rem;
+    animation: fadeInUp 0.7s 0.1s ease both;
+    position: relative;
+  }
+
+  .hero h1 .line-gold { color: var(--primary); }
+  .hero h1 .line-teal { color: var(--secondary); }
+
+  .hero-sub {
+    max-width: 620px;
+    font-size: 1.15rem;
+    color: var(--muted-foreground);
+    line-height: 1.7;
+    margin: 0 auto 2.5rem;
+    font-weight: 300;
+    animation: fadeInUp 0.7s 0.2s ease both;
+  }
+
+  .hero-cta {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    animation: fadeInUp 0.7s 0.3s ease both;
+    margin-bottom: 4rem;
+  }
+
+  .btn-primary {
+    background: var(--primary);
+    color: var(--on-primary);
+    border: none;
+    padding: 0.85rem 2rem;
+    border-radius: 8px;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    letter-spacing: 0.01em;
+    transition: all 0.2s;
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .btn-primary:hover { background: var(--primary-fixed); transform: translateY(-2px); box-shadow: 0 8px 30px var(--active-glow); }
+
+  .btn-secondary {
+    background: var(--surface-container);
+    color: var(--on-surface);
+    border: 1px solid var(--outline-variant);
+    padding: 0.85rem 2rem;
+    border-radius: 8px;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .btn-secondary:hover { background: var(--surface-container-high); border-color: rgba(255,255,255,0.25); }
+
+  /* === STATS BAR === */
+  .stats-bar {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--surface-container);
+    backdrop-filter: blur(20px);
+    animation: fadeInUp 0.7s 0.4s ease both;
+    position: relative;
+  }
+
+  .stat-item {
+    padding: 1.5rem;
+    text-align: center;
+    border-right: 1px solid var(--border);
+  }
+
+  .stat-item:last-child { border-right: none; }
+
+  .stat-num {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.75rem;
+    color: var(--primary);
+    letter-spacing: -0.03em;
+    display: block;
+  }
+
+  .stat-label {
+    font-size: 0.75rem;
+    color: var(--outline);
+    margin-top: 0.25rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  /* === SECTION === */
+  section {
+    padding: 7rem 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .section-label {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    color: var(--primary);
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+
+  .section-title {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(2rem, 4vw, 3rem);
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    margin-bottom: 1.25rem;
+  }
+
+  .section-sub {
+    color: var(--muted-foreground);
+    font-size: 1.05rem;
+    max-width: 560px;
+    font-weight: 300;
+    line-height: 1.7;
+  }
+
+  /* === HOW IT WORKS === */
+  .how-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 5rem;
+    align-items: start;
+    margin-top: 4rem;
+  }
+
+  .steps-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .step {
+    display: flex;
+    gap: 1.5rem;
+    padding: 1.75rem 0;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .step:last-child { border-bottom: none; }
+  .step:hover .step-title { color: var(--primary); }
+
+  .step-num {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--outline);
+    letter-spacing: 0.1em;
+    min-width: 2rem;
+    padding-top: 0.2rem;
+  }
+
+  .step-content { flex: 1; }
+
+  .step-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.05rem;
+    margin-bottom: 0.4rem;
+    transition: color 0.2s;
+  }
+
+  .step-desc {
+    font-size: 0.875rem;
+    color: var(--muted-foreground);
+    line-height: 1.6;
+  }
+
+  .step-badge {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    margin-left: 0.5rem;
+    vertical-align: middle;
+  }
+
+  .badge-ai    { background: rgba(255,179,175,0.12); color: var(--tertiary);    border: 1px solid rgba(255,179,175,0.22); }
+  .badge-chain { background: rgba(78,222,163,0.10);  color: var(--primary);   border: 1px solid rgba(78,222,163,0.22);  }
+  .badge-nft   { background: rgba(255,185,95,0.10);  color: var(--secondary); border: 1px solid rgba(255,185,95,0.22);  }
+
+  /* FLOW VISUAL */
+  .flow-visual {
+    background: var(--card);
+    border: 1px solid var(--outline-variant);
+    border-radius: 16px;
+    padding: 2rem;
+    position: sticky;
+    top: 7rem;
+  }
+
+  .flow-header {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--outline);
+    letter-spacing: 0.1em;
+    margin-bottom: 1.5rem;
+    text-transform: uppercase;
+  }
+
+  .flow-node {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.9rem 1rem;
+    border-radius: 10px;
+    margin-bottom: 0.5rem;
+    background: var(--surface-container);
+    border: 1px solid var(--border);
+    transition: all 0.2s;
+  }
+
+  .flow-node:hover { border-color: var(--outline-variant); background: var(--surface-container-high); }
+
+  .flow-icon {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+
+  .icon-gold   { background: rgba(255,185,95,0.14);  }
+  .icon-teal   { background: rgba(78,222,163,0.13);  }
+  .icon-purple { background: rgba(255,179,175,0.12); }
+  .icon-green  { background: rgba(52,211,153,0.12);  }
+  .icon-coral  { background: rgba(252,124,120,0.12); }
+
+  .flow-node-text {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--on-surface);
+    flex: 1;
+  }
+
+  .flow-node-sub {
+    font-size: 0.7rem;
+    color: var(--outline);
+    margin-top: 0.1rem;
+    font-family: var(--font-mono);
+  }
+
+  .flow-arrow {
+    text-align: center;
+    color: var(--outline-variant);
+    font-size: 0.9rem;
+    margin: 0.25rem 0;
+  }
+
+  /* === MONEY ENGINE === */
+  .money-section {
+    background: var(--surface-container);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 7rem 2rem;
+  }
+
+  .money-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .money-grid {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 5rem;
+    align-items: center;
+    margin-top: 4rem;
+  }
+
+  .pool-chart {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .donut-container {
+    position: relative;
+    width: 280px;
+    height: 280px;
+  }
+
+  .donut-center {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+  }
+
+  .donut-center-num {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.75rem;
+    color: var(--primary);
+    letter-spacing: -0.03em;
+  }
+
+  .donut-center-label {
+    font-size: 0.7rem;
+    color: var(--outline);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .pool-legend {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .legend-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .legend-label { font-size: 0.875rem; color: var(--muted-foreground); flex: 1; }
+  .legend-pct {
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--on-surface);
+  }
+
+  .money-points {
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
+  }
+
+  .money-point {
+    display: flex;
+    gap: 1.25rem;
+    align-items: flex-start;
+  }
+
+  .mp-icon {
+    width: 44px; height: 44px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+    border: 1px solid var(--border);
+  }
+
+  .mp-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1rem;
+    margin-bottom: 0.35rem;
+  }
+
+  .mp-desc {
+    font-size: 0.875rem;
+    color: var(--muted-foreground);
+    line-height: 1.6;
+  }
+
+  /* === SCIENCE === */
+  .science-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-top: 3.5rem;
+  }
+
+  .sci-card {
+    background: var(--surface-container);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.75rem;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .sci-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--primary), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .sci-card:hover { border-color: var(--outline-variant); transform: translateY(-2px); }
+  .sci-card:hover::before { opacity: 1; }
+
+  .sci-icon { font-size: 1.5rem; margin-bottom: 1rem; }
+
+  .sci-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .sci-desc {
+    font-size: 0.8rem;
+    color: var(--muted-foreground);
+    line-height: 1.65;
+  }
+
+  .sci-source {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    color: var(--outline);
+    margin-top: 1rem;
+    letter-spacing: 0.05em;
+  }
+
+  /* === SOCIAL IMPACT === */
+  .impact-section {
+    text-align: center;
+    padding: 7rem 2rem;
+    position: relative;
+    overflow: hidden;
+    background: var(--background);
+  }
+
+  .impact-bg {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 60% 50% at 50% 50%, rgba(78,222,163,0.06) 0%, transparent 70%);
+  }
+
+  .impact-inner { max-width: 1200px; margin: 0 auto; position: relative; }
+
+  .impact-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-top: 4rem;
+  }
+
+  .impact-card {
+    background: var(--surface-container);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 2.5rem 2rem;
+    text-align: left;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.25s;
+  }
+
+  .impact-card:hover { transform: translateY(-4px); border-color: var(--outline-variant); }
+
+  .impact-pct {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 3.5rem;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    margin-bottom: 0.5rem;
+  }
+
+  .impact-card-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .impact-card-desc {
+    font-size: 0.85rem;
+    color: var(--muted-foreground);
+    line-height: 1.65;
+  }
+
+  .impact-accent {
+    position: absolute;
+    bottom: -20px; right: -20px;
+    font-size: 5rem;
+    opacity: 0.06;
+  }
+
+  /* === TECH STACK === */
+  .tech-section {
+    background: var(--surface-container);
+    border-top: 1px solid var(--border);
+    padding: 5rem 2rem;
+  }
+
+  .tech-inner { max-width: 1200px; margin: 0 auto; }
+
+  .tech-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-top: 3rem;
+  }
+
+  .tech-item {
+    background: var(--surface-container);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.25rem;
+    transition: all 0.2s;
+    text-align: center;
+  }
+
+  .tech-item:hover { border-color: var(--outline-variant); background: var(--surface-container-high); }
+
+  .tech-icon { font-size: 1.5rem; margin-bottom: 0.6rem; }
+
+  .tech-name {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--primary);
+    margin-bottom: 0.25rem;
+  }
+
+  .tech-role {
+    font-size: 0.7rem;
+    color: var(--outline);
+  }
+
+  /* === TESTIMONIAL / QUOTE === */
+  .quote-section {
+    padding: 6rem 2rem;
+    max-width: 900px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .quote-text {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(1.5rem, 3vw, 2.2rem);
+    letter-spacing: -0.02em;
+    line-height: 1.3;
+    color: var(--on-surface);
+  }
+
+  .quote-text em {
+    font-style: normal;
+    color: var(--secondary);
+  }
+
+  .quote-source {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--outline);
+    margin-top: 1.5rem;
+    letter-spacing: 0.1em;
+  }
+
+  /* === INVESTOR CTA === */
+  .cta-section {
+    background: var(--surface-container);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 5rem 3rem;
+    text-align: center;
+    margin: 0 2rem 7rem;
+    max-width: 1160px;
+    margin-left: auto;
+    margin-right: auto;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cta-glow {
+    position: absolute;
+    width: 500px; height: 300px;
+    background: radial-gradient(ellipse, rgba(255,185,95,0.06) 0%, transparent 70%);
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+
+  .cta-section h2 {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(2rem, 4vw, 3rem);
+    letter-spacing: -0.03em;
+    margin-bottom: 1.25rem;
+    position: relative;
+  }
+
+  .cta-section p {
+    color: var(--muted-foreground);
+    max-width: 520px;
+    margin: 0 auto 2.5rem;
+    font-weight: 300;
+    font-size: 1.05rem;
+  }
+
+  .cta-btns {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    position: relative;
+  }
+
+  .cta-metrics {
+    display: flex;
+    justify-content: center;
+    gap: 3rem;
+    margin-top: 3rem;
+    padding-top: 3rem;
+    border-top: 1px solid var(--border);
+    position: relative;
+  }
+
+  .cta-metric-num {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.5rem;
+    color: var(--on-surface);
+    letter-spacing: -0.02em;
+    display: block;
+  }
+
+  .cta-metric-label {
+    font-size: 0.75rem;
+    color: var(--outline);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-top: 0.25rem;
+  }
+
+  /* === FOOTER === */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 3rem 4rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 100%;
+  }
+
+  .footer-logo {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.2rem;
+    color: var(--on-surface);
+    letter-spacing: -0.02em;
+  }
+
+  .footer-logo span { color: var(--secondary); }
+
+  .footer-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+  }
+
+  .footer-links a {
+    font-size: 0.8rem;
+    color: var(--outline);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .footer-links a:hover { color: var(--on-surface); }
+
+  .footer-copy {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--outline);
+    letter-spacing: 0.05em;
+  }
+
+  /* === DIVIDER LINE === */
+  .section-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--outline-variant), transparent);
+    margin: 0 2rem;
+  }
+
+  /* === SVG DONUT CHART === */
+  .donut-svg { transform: rotate(-90deg); }
+
+  /* === TICKER === */
+  .ticker-wrap {
+    background: rgba(255,185,95,0.06);
+    border-top: 1px solid rgba(255,185,95,0.12);
+    border-bottom: 1px solid rgba(255,185,95,0.12);
+    overflow: hidden;
+    padding: 0.75rem 0;
+    white-space: nowrap;
+  }
+
+  .ticker-inner {
+    display: inline-block;
+    animation: ticker 30s linear infinite;
+  }
+
+  .ticker-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0 2.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--secondary);
+    letter-spacing: 0.05em;
+  }
+
+  .ticker-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--primary); }
+
+  @keyframes ticker {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  /* === HABIT LOOP VISUAL === */
+  .loop-section {
+    padding: 6rem 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .loop-visual {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    margin-top: 3.5rem;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .loop-phase {
+    padding: 2rem 1.5rem;
+    border-right: 1px solid var(--border);
+    position: relative;
+    transition: background 0.2s;
+  }
+
+  .loop-phase:last-child { border-right: none; }
+  .loop-phase:hover { background: var(--surface-container); }
+
+  .loop-phase-num {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    color: var(--outline);
+    letter-spacing: 0.15em;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+  }
+
+  .loop-emoji { font-size: 1.75rem; margin-bottom: 0.75rem; display: block; }
+
+  .loop-phase-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .loop-phase-desc {
+    font-size: 0.78rem;
+    color: var(--muted-foreground);
+    line-height: 1.6;
+  }
+
+  .loop-arrow {
+    position: absolute;
+    right: -10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--outline-variant);
+    font-size: 1rem;
+    z-index: 1;
+  }
+</style>
+<base target="_blank">
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">Atom<span>x</span></a>
+  <ul class="nav-links">
+    <li><a href="#how">How It Works</a></li>
+    <li><a href="#economy">Economy</a></li>
+    <li><a href="#impact">Impact</a></li>
+    <li><a href="#tech">Tech</a></li>
+    <li><a href="#" class="btn-nav">Launch App</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hero-grid-bg"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-glow-teal"></div>
+
+  <div class="tag-chip">ATOMX PROTOCOL v2.0 · SOLANA DEVNET</div>
+
+  <h1>
+    Stake Your Habits.<br>
+    <span class="line-gold">Earn Real Yield.</span><br>
+    <span class="line-teal">Change the World.</span>
+  </h1>
+
+  <p class="hero-sub">
+    The first on-chain accountability protocol that turns your daily commitments into staked assets — with AI validation, DeFi yield generation, and 35% of every slash donated to global causes.
+  </p>
+
+  <div class="hero-cta">
+    <a href="#" class="btn-primary">Start Your First Commitment →</a>
+    <a href="#how" class="btn-secondary">See How It Works</a>
+  </div>
+
+  <div class="stats-bar">
+    <div class="stat-item">
+      <span class="stat-num">SOL</span>
+      <span class="stat-label">Network Gas Only</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num">AI</span>
+      <span class="stat-label">Proof Validator</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num">35%</span>
+      <span class="stat-label">Slashed → Charity</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num">cNFT</span>
+      <span class="stat-label">Achievement Rewards</span>
+    </div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker-inner">
+    <span class="ticker-item"><span class="ticker-dot"></span>COMMITMENT CREATES ACCOUNTABILITY</span>
+    <span class="ticker-item"><span class="ticker-dot"></span>STAKING CREATES SKIN IN THE GAME</span>
+    <span class="ticker-item"><span class="ticker-dot"></span>AI VALIDATES YOUR DAILY PROOF</span>
+    <span class="ticker-item"><span class="ticker-dot"></span>SLASH FUNDS GLOBAL CHARITIES</span>
+    <span class="ticker-item"><span class="ticker-dot"></span>HABITS BECOME ON-CHAIN IDENTITY</span>
+    <span class="ticker-item"><span class="ticker-dot"></span>YOUR STAKE GENERATES DEFI YIELD</span>
+    <span class="ticker-item"><span class="ticker-dot"></span>COMMITMENT CREATES ACCOUNTABILITY</span>
+    <span class="ticker-item"><span class="ticker-dot"></span>STAKING CREATES SKIN IN THE GAME</span>
+    <span class="ticker-item"><span class="ticker-dot"></span>AI VALIDATES YOUR DAILY PROOF</span>
+    <span class="ticker-item"><span class="ticker-dot"></span>SLASH FUNDS GLOBAL CHARITIES</span>
+    <span class="ticker-item"><span class="ticker-dot"></span>HABITS BECOME ON-CHAIN IDENTITY</span>
+    <span class="ticker-item"><span class="ticker-dot"></span>YOUR STAKE GENERATES DEFI YIELD</span>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<section id="how">
+  <div class="section-label">// HOW IT WORKS</div>
+  <h2 class="section-title">Commit. Prove. Earn.<br>Or Pay the Price.</h2>
+  <p class="section-sub">A simple loop backed by behavioral science, smart contracts, and AI — that makes breaking your habits genuinely costly and keeping them genuinely rewarding.</p>
+
+  <div class="how-wrapper">
+    <div class="steps-list">
+      <div class="step">
+        <span class="step-num">01</span>
+        <div class="step-content">
+          <div class="step-title">Define Your Commitment <span class="step-badge badge-chain">ON-CHAIN</span></div>
+          <div class="step-desc">Set a habit (reading, exercise, coding), duration in days, daily target in minutes, and stake an amount of USDT. Your stake is locked in an escrow vault — publicly verifiable on Solana.</div>
+        </div>
+      </div>
+      <div class="step">
+        <span class="step-num">02</span>
+        <div class="step-content">
+          <div class="step-title">Execute Daily & Submit Proof <span class="step-badge badge-ai">AI VERIFIED</span></div>
+          <div class="step-desc">Complete your habit, hit the in-app timer, and upload a photo. LLaMA 4 Scout analyzes your image against your commitment context — confidence score ≥30 = valid proof, submitted on-chain as a ProofRecord PDA.</div>
+        </div>
+      </div>
+      <div class="step">
+        <span class="step-num">03</span>
+        <div class="step-content">
+          <div class="step-title">Earn Daily Validator NFTs <span class="step-badge badge-nft">cNFT</span></div>
+          <div class="step-desc">Every verified day mints a compressed NFT badge on Solana via Crossmint. Your on-chain habit history becomes a verifiable identity — a permanent track record of discipline.</div>
+        </div>
+      </div>
+      <div class="step">
+        <span class="step-num">04</span>
+        <div class="step-content">
+          <div class="step-title">Claim Rewards + Champion Medal</div>
+          <div class="step-desc">Complete all days → claim your full stake back, plus a loyalty bonus (1–3% from the global rewards pool), and a unique Champion Medal NFT. The more commitments you complete, the higher your bonus tier.</div>
+        </div>
+      </div>
+      <div class="step">
+        <span class="step-num">05</span>
+        <div class="step-content">
+          <div class="step-title">Miss a Day? Slash Happens.</div>
+          <div class="step-desc">Miss your deadline: short commitments (≤7 days) get 100% slashed. Longer ones get 40% on first failure, 100% on second. Slashed funds are distributed — not burned — into the ecosystem pools.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-visual">
+      <div class="flow-header">// COMMITMENT LIFECYCLE</div>
+
+      <div class="flow-node">
+        <div class="flow-icon icon-gold">🔒</div>
+        <div>
+          <div class="flow-node-text">Stake USDT</div>
+          <div class="flow-node-sub">Escrow vault on Solana</div>
+        </div>
+      </div>
+      <div class="flow-arrow">↓</div>
+
+      <div class="flow-node">
+        <div class="flow-icon icon-purple">🤖</div>
+        <div>
+          <div class="flow-node-text">AI Proof Validation</div>
+          <div class="flow-node-sub">LLaMA 4 Scout via Groq</div>
+        </div>
+      </div>
+      <div class="flow-arrow">↓</div>
+
+      <div class="flow-node">
+        <div class="flow-icon icon-teal">⛓</div>
+        <div>
+          <div class="flow-node-text">On-Chain Proof Record</div>
+          <div class="flow-node-sub">Sequential day verification</div>
+        </div>
+      </div>
+      <div class="flow-arrow">↓</div>
+
+      <div class="flow-node">
+        <div class="flow-icon icon-gold">🏆</div>
+        <div>
+          <div class="flow-node-text">Daily Badge cNFT Minted</div>
+          <div class="flow-node-sub">Crossmint compressed NFT</div>
+        </div>
+      </div>
+
+      <div style="margin: 1.25rem 0; padding: 1rem; background: rgba(78,222,163,0.06); border: 1px solid rgba(78,222,163,0.2); border-radius: 10px; display: flex; align-items: center; gap: 0.75rem;">
+        <span style="font-size: 1rem;">✅</span>
+        <div>
+          <div style="font-size: 0.8rem; font-weight: 600; color: var(--primary);">All Days Complete</div>
+          <div style="font-size: 0.7rem; color: var(--outline); font-family: var(--font-mono);">Claim stake + bonus + Champion Medal</div>
+        </div>
+      </div>
+
+      <div style="padding: 1rem; background: rgba(252,124,120,0.06); border: 1px solid rgba(252,124,120,0.18); border-radius: 10px; display: flex; align-items: center; gap: 0.75rem;">
+        <span style="font-size: 1rem;">⚡</span>
+        <div>
+          <div style="font-size: 0.8rem; font-weight: 600; color: var(--tertiary-container);">Missed Deadline</div>
+          <div style="font-size: 0.7rem; color: var(--outline); font-family: var(--font-mono);">Stake slashed → distributed to pools</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- BEHAVIORAL SCIENCE -->
+<section class="loop-section" id="science">
+  <div class="section-label">// THE SCIENCE BEHIND IT</div>
+  <h2 class="section-title">Built on Behavioral<br>Neuroscience</h2>
+  <p class="section-sub">Atomx isn't just an app — it's an implementation of proven behavioral architecture from Atomic Habits applied to Web3 rails.</p>
+
+  <div class="loop-visual">
+    <div class="loop-phase">
+      <div class="loop-phase-num">Phase 01</div>
+      <span class="loop-emoji">👁</span>
+      <div class="loop-phase-title">Cue</div>
+      <div class="loop-phase-desc">Your commitment is public, on-chain, and financially at risk. Every day you open the app, you're reminded of what you've staked.</div>
+      <div class="loop-arrow">›</div>
+    </div>
+    <div class="loop-phase">
+      <div class="loop-phase-num">Phase 02</div>
+      <span class="loop-emoji">🔥</span>
+      <div class="loop-phase-title">Craving</div>
+      <div class="loop-phase-desc">Loss aversion kicks in. Your USDT is locked — the fear of a slash creates powerful intrinsic motivation to execute daily.</div>
+      <div class="loop-arrow">›</div>
+    </div>
+    <div class="loop-phase">
+      <div class="loop-phase-num">Phase 03</div>
+      <span class="loop-emoji">⚡</span>
+      <div class="loop-phase-title">Response</div>
+      <div class="loop-phase-desc">You perform the habit, prove it with AI-verified photo evidence, and submit it on-chain within your daily window.</div>
+      <div class="loop-arrow">›</div>
+    </div>
+    <div class="loop-phase">
+      <div class="loop-phase-num">Phase 04</div>
+      <span class="loop-emoji">🏅</span>
+      <div class="loop-phase-title">Reward</div>
+      <div class="loop-phase-desc">Instant dopamine: an NFT badge, a visible chain on your streak, and the compounding identity of someone who keeps their word.</div>
+    </div>
+  </div>
+
+  <div class="science-grid">
+    <div class="sci-card">
+      <div class="sci-icon">🧠</div>
+      <div class="sci-title">The Cardinal Rule</div>
+      <div class="sci-desc">What is immediately rewarded is repeated. What is immediately punished is avoided. Atomx creates both signals simultaneously through staking and instant NFT rewards.</div>
+      <div class="sci-source">REF: Atomic Habits, Ch.15 — Cardinal Rule of Behavior Change</div>
+    </div>
+    <div class="sci-card">
+      <div class="sci-icon">📊</div>
+      <div class="sci-title">Visual Habit Tracking</div>
+      <div class="sci-desc">Your on-chain streak is visible proof of your identity. The compounding visual of consecutive daily badges creates the "never miss twice" psychological anchor.</div>
+      <div class="sci-source">REF: Atomic Habits, Ch.16 — Habit Tracking Architecture</div>
+    </div>
+    <div class="sci-card">
+      <div class="sci-icon">🤝</div>
+      <div class="sci-title">Accountability Contract</div>
+      <div class="sci-desc">A smart contract is the ultimate accountability partner. It doesn't negotiate. It doesn't accept excuses. Your funds, your word, your identity — all on-chain.</div>
+      <div class="sci-source">REF: Atomic Habits, Ch.17 — Habit Contract & Social Cost</div>
+    </div>
+  </div>
+</section>
+
+<!-- MONEY ENGINE -->
+<div class="money-section" id="economy">
+  <div class="money-inner">
+    <div class="section-label">// THE MONEY ENGINE</div>
+    <h2 class="section-title">Every Staked Dollar<br>Works While You Do</h2>
+    <p class="section-sub">Locked user stakes don't sit idle. They're deployed into DeFi yield strategies — generating protocol revenue that funds rewards and sustains the ecosystem indefinitely.</p>
+
+    <div class="money-grid">
+      <div>
+        <div style="text-align: center; margin-bottom: 2rem;">
+          <div class="donut-container">
+            <svg class="donut-svg" width="280" height="280" viewBox="0 0 280 280">
+              <!-- Charity 35% — primary emerald -->
+              <circle cx="140" cy="140" r="100" fill="none" stroke="#4edea3" stroke-width="36"
+                stroke-dasharray="219.9 628.3" stroke-dashoffset="0" opacity="0.9"/>
+              <!-- Rewards 30% — secondary orange -->
+              <circle cx="140" cy="140" r="100" fill="none" stroke="#ffb95f" stroke-width="36"
+                stroke-dasharray="188.5 628.3" stroke-dashoffset="-219.9" opacity="0.9"/>
+              <!-- Treasury 25% — purple -->
+              <circle cx="140" cy="140" r="100" fill="none" stroke="#ffb3af" stroke-width="36"
+                stroke-dasharray="157.1 628.3" stroke-dashoffset="-408.4" opacity="0.9"/>
+              <!-- Backup 10% — tertiary coral -->
+              <circle cx="140" cy="140" r="100" fill="none" stroke="#fc7c78" stroke-width="36"
+                stroke-dasharray="62.8 628.3" stroke-dashoffset="-565.5" opacity="0.9"/>
+            </svg>
+            <div class="donut-center">
+              <div class="donut-center-num">SLASH</div>
+              <div class="donut-center-label">Distribution</div>
+            </div>
+          </div>
+        </div>
+        <div class="pool-legend">
+          <div class="legend-item">
+            <div class="legend-dot" style="background: #4edea3;"></div>
+            <div class="legend-label">Charity & Social Impact Pool</div>
+            <div class="legend-pct">35%</div>
+          </div>
+          <div class="legend-item">
+            <div class="legend-dot" style="background: #ffb95f;"></div>
+            <div class="legend-label">Rewards Pool (Loyalists)</div>
+            <div class="legend-pct">30%</div>
+          </div>
+          <div class="legend-item">
+            <div class="legend-dot" style="background: #ffb3af;"></div>
+            <div class="legend-label">Protocol Treasury</div>
+            <div class="legend-pct">25%</div>
+          </div>
+          <div class="legend-item">
+            <div class="legend-dot" style="background: #fc7c78;"></div>
+            <div class="legend-label">Backup Reserve Fund</div>
+            <div class="legend-pct">10%</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="money-points">
+        <div class="money-point">
+          <div class="mp-icon icon-gold">💰</div>
+          <div>
+            <div class="mp-title">Stakes Generate DeFi Yield</div>
+            <div class="mp-desc">Every USDT locked in commitments is deployed to external staking and lending platforms. The yield fuels the rewards pool — so winners actually earn <em>more</em> than they staked.</div>
+          </div>
+        </div>
+        <div class="money-point">
+          <div class="mp-icon icon-teal">⚡</div>
+          <div>
+            <div class="mp-title">Slash Creates Sustainable Rewards</div>
+            <div class="mp-desc">When users fail, their slashed stake is redistributed — not wasted. 30% goes to those who succeed (loyalty bonus), creating a virtuous flywheel where discipline is directly financially rewarded.</div>
+          </div>
+        </div>
+        <div class="money-point">
+          <div class="mp-icon" style="background: rgba(52,211,153,0.1);">🌱</div>
+          <div>
+            <div class="mp-title">Redemption, Not Abandonment</div>
+            <div class="mp-desc">Failed users aren't kicked out — they receive a Redemption Token to restart at a reduced stake. This creates second chances while maintaining accountability. Retention is built into the failure state.</div>
+          </div>
+        </div>
+        <div class="money-point">
+          <div class="mp-icon icon-coral">🛡</div>
+          <div>
+            <div class="mp-title">10% Backup Fund Ensures Solvency</div>
+            <div class="mp-desc">A dedicated backup reserve guarantees reward payouts even in edge cases. Protocol stability is non-negotiable — users who complete their commitments always get paid.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SOCIAL IMPACT -->
+<section class="impact-section" id="impact">
+  <div class="impact-bg"></div>
+  <div class="impact-inner">
+    <div class="section-label">// SOCIAL IMPACT</div>
+    <h2 class="section-title">Every Failed Habit<br>Funds a Better World</h2>
+    <p class="section-sub" style="margin: 0 auto;">35% of all slashed stakes go directly to a transparent charity pool. Personal failure becomes collective impact — this is what makes Atomx a social protocol, not just a habit app.</p>
+
+    <div class="impact-cards">
+      <div class="impact-card">
+        <div class="impact-pct" style="color: var(--primary);">35%</div>
+        <div class="impact-card-title">Charity Pool</div>
+        <div class="impact-card-desc">Every slash contributes to verified global causes — environmental, humanitarian, and community development. Distributed transparently, on-chain.</div>
+        <div class="impact-accent">🌍</div>
+      </div>
+      <div class="impact-card">
+        <div class="impact-pct" style="color: var(--secondary);">30%</div>
+        <div class="impact-card-title">Loyalty Rewards</div>
+        <div class="impact-card-desc">Those who keep their commitments earn bonuses funded by those who don't. A direct, fair transfer from quitters to champions — no middleman.</div>
+        <div class="impact-accent">🏆</div>
+      </div>
+      <div class="impact-card">
+        <div class="impact-pct" style="color: var(--tertiary);">∞</div>
+        <div class="impact-card-title">On-Chain Identity</div>
+        <div class="impact-card-desc">Every completed commitment, every daily badge, every Champion Medal builds a permanent, verifiable reputation on Solana. Your discipline becomes your digital identity.</div>
+        <div class="impact-accent">⛓</div>
+      </div>
+    </div>
+
+    <div style="margin-top: 4rem; padding: 2.5rem; background: var(--card); border: 1px solid var(--outline-variant); border-radius: 16px; max-width: 800px; margin-left: auto; margin-right: auto;">
+      <div style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--outline); margin-bottom: 1rem; letter-spacing: 0.1em; text-transform: uppercase;">// THE NETWORK EFFECT</div>
+      <p style="font-family: var(--font-display); font-weight: 700; font-size: 1.4rem; letter-spacing: -0.02em; line-height: 1.3;">The more people fail, the more charity gets funded. The more people succeed, the stronger their on-chain identity. <span style="color: var(--primary);">Both outcomes make the world better.</span></p>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- TECH STACK -->
+<div class="tech-section" id="tech">
+  <div class="tech-inner">
+    <div class="section-label">// TECHNOLOGY</div>
+    <h2 class="section-title">Production-Grade<br>Web3 Infrastructure</h2>
+    <p class="section-sub">Every component of Atomx is purpose-built — from the Rust smart contracts on Solana to the AI validator running LLaMA 4 Scout.</p>
+
+    <div class="tech-grid">
+      <div class="tech-item">
+        <div class="tech-icon">⚡</div>
+        <div class="tech-name">Solana + Anchor</div>
+        <div class="tech-role">Smart contracts & escrow</div>
+      </div>
+      <div class="tech-item">
+        <div class="tech-icon">🤖</div>
+        <div class="tech-name">Groq Vision</div>
+        <div class="tech-role">LLaMA 4 Scout AI proof validation</div>
+      </div>
+      <div class="tech-item">
+        <div class="tech-icon">🎨</div>
+        <div class="tech-name">Crossmint API</div>
+        <div class="tech-role">Compressed NFT minting (cNFT)</div>
+      </div>
+      <div class="tech-item">
+        <div class="tech-icon">📡</div>
+        <div class="tech-name">Helius Webhook</div>
+        <div class="tech-role">On-chain event indexer</div>
+      </div>
+      <div class="tech-item">
+        <div class="tech-icon">🗄</div>
+        <div class="tech-name">Supabase</div>
+        <div class="tech-role">Off-chain metadata & caching</div>
+      </div>
+      <div class="tech-item">
+        <div class="tech-icon">👻</div>
+        <div class="tech-name">Phantom Wallet</div>
+        <div class="tech-role">Auto-connect, SSR-safe</div>
+      </div>
+      <div class="tech-item">
+        <div class="tech-icon">🔐</div>
+        <div class="tech-name">SHA-256 Hashing</div>
+        <div class="tech-role">Anti-plagiarism proof registry</div>
+      </div>
+      <div class="tech-item">
+        <div class="tech-icon">⏰</div>
+        <div class="tech-name">Cron Deadline Engine</div>
+        <div class="tech-role">Automated slash enforcement</div>
+      </div>
+    </div>
+
+    <!-- Security callout -->
+    <div style="margin-top: 2rem; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
+      <div style="padding: 1.25rem; border: 1px solid rgba(52,211,153,0.2); border-radius: 10px; background: rgba(52,211,153,0.05);">
+        <div style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--success-emerald); letter-spacing: 0.1em; margin-bottom: 0.5rem;">ANTI-PLAGIARISM</div>
+        <div style="font-size: 0.82rem; color: var(--muted-foreground);">Every proof image is SHA-256 hashed and stored on-chain. Reusing a photo is mathematically impossible.</div>
+      </div>
+      <div style="padding: 1.25rem; border: 1px solid rgba(78,222,163,0.2); border-radius: 10px; background: rgba(78,222,163,0.05);">
+        <div style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--primary); letter-spacing: 0.1em; margin-bottom: 0.5rem;">SEQUENTIAL VALIDATION</div>
+        <div style="font-size: 0.82rem; color: var(--muted-foreground);">Smart contract enforces sequential day proofs. Day 3 can only be submitted after Day 2 — no skipping.</div>
+      </div>
+      <div style="padding: 1.25rem; border: 1px solid rgba(255,179,175,0.2); border-radius: 10px; background: rgba(255,179,175,0.05);">
+        <div style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--tertiary); letter-spacing: 0.1em; margin-bottom: 0.5rem;">50% MINIMUM RULE</div>
+        <div style="font-size: 0.82rem; color: var(--muted-foreground);">Smart contract rejects proofs under 50% of daily target minutes. No gaming the timer — it's enforced in Rust.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ROTATING QUOTES -->
+<div class="quotes-outer">
+  <div class="quotes-label">// WORDS THAT HIT DIFFERENT</div>
+
+  <div class="quotes-stage" id="quotesStage">
+
+    <div class="quote-slide active" data-color="gold">
+      <div class="qs-category">ON IDENTITY</div>
+      <blockquote class="qs-text">"Every action you take is a vote for the type of person you wish to become. No single instance will transform your beliefs, but as the votes build up, so does the evidence of your new identity."</blockquote>
+      <div class="qs-author">James Clear — Atomic Habits</div>
+      <div class="qs-mirror">What does your on-chain history say about who you are?</div>
+    </div>
+
+    <div class="quote-slide" data-color="teal">
+      <div class="qs-category">ON CONSISTENCY</div>
+      <blockquote class="qs-text">"You do not rise to the level of your goals. You fall to the level of your systems."</blockquote>
+      <div class="qs-author">James Clear — Atomic Habits</div>
+      <div class="qs-mirror">Atomx is the system. Your commitment is the proof. The chain doesn't lie.</div>
+    </div>
+
+    <div class="quote-slide" data-color="coral">
+      <div class="qs-category">ON STAKES</div>
+      <blockquote class="qs-text">"The more immediate and certain the pain, the faster we learn. The more distant the consequences, the easier it is to ignore them."</blockquote>
+      <div class="qs-author">James Clear — Atomic Habits</div>
+      <div class="qs-mirror">Your staked USDT makes the consequence immediate. That's the whole point.</div>
+    </div>
+
+    <div class="quote-slide" data-color="tertiary">
+      <div class="qs-category">ON STARTING SMALL</div>
+      <blockquote class="qs-text">"Habits are the compound interest of self-improvement. The same way money multiplies through compound interest, the effects of your habits multiply as you repeat them."</blockquote>
+      <div class="qs-author">James Clear — Atomic Habits</div>
+      <div class="qs-mirror">Day 1 feels small. Day 30 feels like a different life.</div>
+    </div>
+
+    <div class="quote-slide" data-color="green">
+      <div class="qs-category">ON NEVER MISSING TWICE</div>
+      <blockquote class="qs-text">"Missing once is an accident. Missing twice is the start of a new habit. The first mistake is never the one that ruins you — it's the spiral of repeated mistakes that follows."</blockquote>
+      <div class="qs-author">James Clear — Atomic Habits</div>
+      <div class="qs-mirror">Miss a day? Atomx still gives you a redemption token. The protocol forgives once.</div>
+    </div>
+
+    <div class="quote-slide" data-color="gold">
+      <div class="qs-category">ON SOCIAL COST</div>
+      <blockquote class="qs-text">"An accountability partner can create an immediate cost to inaction. When you know someone is watching, you raise your game."</blockquote>
+      <div class="qs-author">James Clear — Atomic Habits</div>
+      <div class="qs-mirror">Except here, everyone on-chain is watching. And so is the smart contract.</div>
+    </div>
+
+    <div class="quote-slide" data-color="teal">
+      <div class="qs-category">ON IDENTITY CHANGE</div>
+      <blockquote class="qs-text">"The goal is not to read a book. The goal is to become a reader. The goal is not to run a marathon. The goal is to become a runner."</blockquote>
+      <div class="qs-author">James Clear — Atomic Habits</div>
+      <div class="qs-mirror">Your cNFT badges aren't trophies. They're proof of who you've become.</div>
+    </div>
+
+    <div class="quote-slide" data-color="coral">
+      <div class="qs-category">ON SHOWING UP</div>
+      <blockquote class="qs-text">"The most important thing is showing up. Even a poor workout is better than skipping. Even a bad writing session is better than nothing. You can't edit a blank page."</blockquote>
+      <div class="qs-author">James Clear — Atomic Habits</div>
+      <div class="qs-mirror">50% of your target is all it takes to count. The chain rewards presence, not perfection.</div>
+    </div>
+
+  </div>
+
+  <!-- Progress dots -->
+  <div class="qs-dots" id="qsDots"></div>
+
+  <!-- Navigation -->
+  <div class="qs-nav">
+    <button class="qs-btn" id="qsPrev" aria-label="Previous quote">←</button>
+    <div class="qs-progress-bar"><div class="qs-progress-fill" id="qsProgressFill"></div></div>
+    <button class="qs-btn" id="qsNext" aria-label="Next quote">→</button>
+  </div>
+
+</div>
+
+<style>
+.quotes-outer {
+  padding: 6rem 2rem;
+  max-width: 900px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.quotes-label {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--outline);
+  letter-spacing: 0.15em;
+  margin-bottom: 3rem;
+  text-transform: uppercase;
+}
+
+.quotes-stage {
+  position: relative;
+  min-height: 320px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.quote-slide {
+  position: absolute;
+  width: 100%;
+  opacity: 0;
+  transform: translateY(18px) scale(0.98);
+  pointer-events: none;
+  transition: opacity 0.55s cubic-bezier(.4,0,.2,1), transform 0.55s cubic-bezier(.4,0,.2,1);
+}
+
+.quote-slide.active {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+  position: relative;
+}
+
+.quote-slide.exit {
+  opacity: 0;
+  transform: translateY(-14px) scale(0.98);
+  position: absolute;
+}
+
+.qs-category {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.18em;
+  margin-bottom: 1.75rem;
+  text-transform: uppercase;
+  display: inline-block;
+  padding: 0.3rem 0.9rem;
+  border-radius: 100px;
+  border: 1px solid;
+}
+
+.quote-slide[data-color="gold"] .qs-category  { color: var(--secondary);   border-color: rgba(255,185,95,0.3);  background: rgba(255,185,95,0.07); }
+.quote-slide[data-color="teal"] .qs-category  { color: var(--primary);   border-color: rgba(78,222,163,0.3);  background: rgba(78,222,163,0.07); }
+.quote-slide[data-color="coral"] .qs-category { color: var(--tertiary-container);  border-color: rgba(252,124,120,0.3);  background: rgba(252,124,120,0.07); }
+.quote-slide[data-color="tertiary"] .qs-category{ color: var(--tertiary); border-color: rgba(255,179,175,0.3); background: rgba(255,179,175,0.07);}
+.quote-slide[data-color="green"] .qs-category { color: var(--success-emerald);  border-color: rgba(52,211,153,0.3);  background: rgba(52,211,153,0.07); }
+
+.qs-text {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.3rem, 2.8vw, 1.9rem);
+  letter-spacing: -0.025em;
+  line-height: 1.35;
+  color: var(--on-surface);
+  margin-bottom: 1.5rem;
+  quotes: none;
+}
+
+.qs-text::before { content: '\201C'; color: var(--outline); font-size: 3rem; line-height: 0; vertical-align: -0.5rem; margin-right: 0.15rem; font-weight: 400; }
+.qs-text::after  { content: '\201D'; color: var(--outline); font-size: 3rem; line-height: 0; vertical-align: -0.5rem; margin-left: 0.15rem;  font-weight: 400; }
+
+.qs-author {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--outline);
+  letter-spacing: 0.08em;
+  margin-bottom: 2rem;
+  text-transform: uppercase;
+}
+
+.qs-mirror {
+  display: inline-block;
+  font-size: 0.95rem;
+  font-weight: 400;
+  color: var(--muted-foreground);
+  font-style: italic;
+  padding: 1rem 1.5rem;
+  border-left: 2px solid;
+  border-radius: 0 8px 8px 0;
+  background: var(--surface-container);
+  text-align: left;
+  line-height: 1.6;
+  max-width: 600px;
+}
+
+.quote-slide[data-color="gold"]   .qs-mirror { border-color: var(--secondary);   }
+.quote-slide[data-color="teal"]   .qs-mirror { border-color: var(--primary);   }
+.quote-slide[data-color="coral"]  .qs-mirror { border-color: var(--tertiary-container);  }
+.quote-slide[data-color="tertiary"] .qs-mirror { border-color: var(--tertiary); }
+.quote-slide[data-color="green"]  .qs-mirror { border-color: var(--success-emerald);  }
+
+.qs-dots {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 2.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.qs-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--outline-variant);
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.3s, transform 0.3s, width 0.3s;
+}
+
+.qs-dot.active {
+  width: 24px;
+  border-radius: 3px;
+  background: var(--secondary);
+  transform: none;
+}
+
+.qs-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
+  margin-top: 0.5rem;
+}
+
+.qs-btn {
+  background: var(--surface-container);
+  border: 1px solid var(--outline-variant);
+  color: var(--muted-foreground);
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.qs-btn:hover { background: var(--surface-container-high); color: var(--on-surface); border-color: rgba(255,255,255,0.25); }
+
+.qs-progress-bar {
+  width: 160px;
+  height: 2px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.qs-progress-fill {
+  height: 100%;
+  background: var(--secondary);
+  border-radius: 2px;
+  transition: width 0.1s linear;
+}
+</style>
+
+<script>
+(function() {
+  const slides = document.querySelectorAll('.quote-slide');
+  const dotsContainer = document.getElementById('qsDots');
+  const fillEl = document.getElementById('qsProgressFill');
+  const DURATION = 6000;
+  let current = 0;
+  let timer = null;
+  let elapsed = 0;
+  let lastTick = null;
+  let paused = false;
+
+  // Build dots
+  slides.forEach((_, i) => {
+    const d = document.createElement('button');
+    d.className = 'qs-dot' + (i === 0 ? ' active' : '');
+    d.setAttribute('aria-label', 'Quote ' + (i+1));
+    d.addEventListener('click', () => goTo(i));
+    dotsContainer.appendChild(d);
+  });
+
+  function getDots() { return dotsContainer.querySelectorAll('.qs-dot'); }
+
+  function goTo(next, dir) {
+    if (next === current) return;
+    const prev = current;
+    slides[prev].classList.add('exit');
+    slides[prev].classList.remove('active');
+    setTimeout(() => slides[prev].classList.remove('exit'), 600);
+
+    current = (next + slides.length) % slides.length;
+    slides[current].classList.add('active');
+
+    getDots().forEach((d, i) => d.classList.toggle('active', i === current));
+    resetTimer();
+  }
+
+  function next() { goTo((current + 1) % slides.length); }
+  function prev() { goTo((current - 1 + slides.length) % slides.length); }
+
+  document.getElementById('qsNext').addEventListener('click', next);
+  document.getElementById('qsPrev').addEventListener('click', prev);
+
+  // Keyboard
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight') next();
+    if (e.key === 'ArrowLeft')  prev();
+  });
+
+  // Auto-advance with real progress bar
+  function resetTimer() {
+    elapsed = 0;
+    lastTick = performance.now();
+    fillEl.style.width = '0%';
+  }
+
+  function tick(now) {
+    if (!paused) {
+      const delta = now - (lastTick || now);
+      lastTick = now;
+      elapsed += delta;
+      const pct = Math.min((elapsed / DURATION) * 100, 100);
+      fillEl.style.width = pct + '%';
+      if (elapsed >= DURATION) next();
+    }
+    requestAnimationFrame(tick);
+  }
+
+  // Pause on hover
+  const outer = document.querySelector('.quotes-outer');
+  outer.addEventListener('mouseenter', () => { paused = true; lastTick = null; });
+  outer.addEventListener('mouseleave', () => { paused = false; lastTick = performance.now(); });
+
+  resetTimer();
+  requestAnimationFrame(tick);
+})();
+</script>
+
+<div class="section-divider"></div>
+
+<!-- INVESTOR CTA -->
+<div style="padding: 5rem 2rem;">
+  <div class="cta-section">
+    <div class="cta-glow"></div>
+    <div style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--secondary); letter-spacing: 0.15em; margin-bottom: 1.25rem; text-transform: uppercase; position: relative;">// FOR INVESTORS & JUDGES</div>
+    <h2>A Self-Sustaining Ecosystem<br>Built to Last</h2>
+    <p>Atomx isn't dependent on token inflation or VC runway. Every economic mechanism — staking yield, slash redistribution, and the redemption loop — creates a protocol that grows stronger as adoption grows.</p>
+    <div class="cta-btns">
+      <a href="#" class="btn-primary">Try the Demo App →</a>
+      <a href="#" class="btn-secondary">Read the Architecture Docs</a>
+      <a href="#" class="btn-secondary">View Smart Contract</a>
+    </div>
+    <div class="cta-metrics">
+      <div>
+        <span class="cta-metric-num">Solana</span>
+        <div class="cta-metric-label">Sub-second finality</div>
+      </div>
+      <div>
+        <span class="cta-metric-num">Anchor v0.32</span>
+        <div class="cta-metric-label">Smart contract framework</div>
+      </div>
+      <div>
+        <span class="cta-metric-num">LLaMA 4</span>
+        <div class="cta-metric-label">AI proof validator</div>
+      </div>
+      <div>
+        <span class="cta-metric-num">Gas Only</span>
+        <div class="cta-metric-label">No protocol fees</div>
+      </div>
+      <div>
+        <span class="cta-metric-num">100%</span>
+        <div class="cta-metric-label">Transparent on-chain</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Atom<span>x</span> Protocol</div>
+  <ul class="footer-links">
+    <li><a href="#">How It Works</a></li>
+    <li><a href="#">Whitepaper</a></li>
+    <li><a href="#">GitHub</a></li>
+    <li><a href="#">Twitter</a></li>
+    <li><a href="#">Discord</a></li>
+  </ul>
+  <div class="footer-copy">© 2026 ATOMX PROTOCOL · BUILT ON SOLANA</div>
+</footer>
+
+</body>
+</html>

@@ -96,6 +96,120 @@ body {
   height: 1rem !important;
 } /* // updated, scale wallet icons down to match the compact navbar */
 
+/* ── Wallet Adapter Modal Overrides ── */
+.wallet-adapter-modal-wrapper {
+  background: #0d111d !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 1.25rem !important;
+  padding: 2rem !important;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6) !important;
+}
+
+.wallet-adapter-modal-title {
+  font-family: var(--font-geist-sans), sans-serif !important;
+  font-size: 1.25rem !important;
+  font-weight: 600 !important;
+  color: #dde4dd !important;
+  text-align: center !important;
+  margin-bottom: 1.5rem !important;
+  line-height: 1.4 !important;
+}
+
+.wallet-adapter-modal-list {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0.625rem !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.wallet-adapter-modal-list li {
+  margin: 0 !important;
+  padding: 0 !important;
+  list-style: none !important;
+}
+
+.wallet-adapter-modal-list-more {
+  color: #4edea3 !important;
+  font-size: 0.85rem !important;
+  margin-top: 0.5rem !important;
+}
+
+.wallet-adapter-modal-list .wallet-adapter-button {
+  width: 100% !important;
+  height: 3.25rem !important;
+  padding: 0 1.25rem !important;
+  border-radius: 0.875rem !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  color: #dde4dd !important;
+  font-size: 0.95rem !important;
+  font-weight: 500 !important;
+  justify-content: flex-start !important;
+  gap: 0.875rem !important;
+  transition: background 0.2s, border-color 0.2s !important;
+}
+
+.wallet-adapter-modal-list .wallet-adapter-button:hover {
+  background: rgba(78, 222, 163, 0.08) !important;
+  border-color: rgba(78, 222, 163, 0.25) !important;
+  color: #4edea3 !important;
+  transform: none !important;
+}
+
+.wallet-adapter-modal-list .wallet-adapter-button-end-icon,
+.wallet-adapter-modal-list .wallet-adapter-button-start-icon {
+  margin: 0 !important;
+  width: 2rem !important;
+  height: 2rem !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.wallet-adapter-modal-list .wallet-adapter-button-start-icon img,
+.wallet-adapter-modal-list .wallet-adapter-button-start-icon svg {
+  width: 1.75rem !important;
+  height: 1.75rem !important;
+}
+
+/* "Detected" badge on the right */
+.wallet-adapter-modal-list .wallet-adapter-button p {
+  margin-left: auto !important;
+  font-size: 0.75rem !important;
+  color: #4edea3 !important;
+  opacity: 0.85 !important;
+  font-weight: 500 !important;
+}
+
+.wallet-adapter-modal-overlay {
+  background: rgba(0, 0, 0, 0.72) !important;
+  backdrop-filter: blur(6px) !important;
+}
+
+.wallet-adapter-modal-button-close {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border-radius: 50% !important;
+  top: 1rem !important;
+  right: 1rem !important;
+  width: 2rem !important;
+  height: 2rem !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: background 0.2s !important;
+}
+
+.wallet-adapter-modal-button-close:hover {
+  background: rgba(255, 255, 255, 0.12) !important;
+}
+
+.wallet-adapter-modal-button-close svg {
+  fill: #94a3b8 !important;
+  width: 0.875rem !important;
+  height: 0.875rem !important;
+}
+
 @media (max-width: 640px) {
   .wallet-adapter-button {
     padding: 0 0.8rem !important;
