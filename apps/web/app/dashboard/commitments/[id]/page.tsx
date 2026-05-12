@@ -51,7 +51,7 @@ export default function CommitmentDetailPage() {
   const [claimSuccess, setClaimSuccess] = useState(false);
 
   // --- 1. Data Fetching Hook ---
-  const { commitment, title, category, description, loading, connection, wallet } = useCommitmentData(pda);
+  const { commitment, lastProof, title, category, description, loading, connection, wallet } = useCommitmentData(pda);
 
   // --- 2. Timer Hook ---
   const {
@@ -65,6 +65,21 @@ export default function CommitmentDetailPage() {
   const elapsedMinutes = Math.floor(elapsedSeconds / 60);
   const timerProgress = Math.min((elapsedMinutes / targetMinutes) * 100, 100);
   const canFinish = elapsedMinutes >= minimumMinutes;
+
+  // Security: Check if user already submitted a proof today (UTC)
+  const isAlreadySubmittedToday = (() => {
+    if (!lastProof || !lastProof.submittedAt) return false;
+    
+    // submittedAt is a BN representing unix timestamp
+    const lastSubmitDate = new Date(lastProof.submittedAt.toNumber() * 1000);
+    const now = new Date();
+    
+    return (
+      lastSubmitDate.getUTCFullYear() === now.getUTCFullYear() &&
+      lastSubmitDate.getUTCMonth() === now.getUTCMonth() &&
+      lastSubmitDate.getUTCDate() === now.getUTCDate()
+    );
+  })();
 
   // Victory state: user has submitted proof for all required days
   const isFinished = !!commitment && commitment.proofCount >= commitment.durationDays;
@@ -358,6 +373,7 @@ export default function CommitmentDetailPage() {
                 canFinish={canFinish} daysCompleted={commitment.proofCount} finishError={finishError}
                 onStart={startTimer} onPause={pauseTimer} onResume={resumeTimer} onReset={resetTimer}
                 onFinish={() => { if (finishTimer(targetMinutes)) setStep('upload'); }} formatTime={formatTime}
+                isAlreadySubmittedToday={isAlreadySubmittedToday}
               />
             )}
 
